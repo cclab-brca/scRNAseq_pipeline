@@ -1,7 +1,10 @@
 ---
 title: Single-cell RNA-seq processing pipeline
 author: Yaniv Eyal-Lubling
-output: html_document
+output: 
+   md_document:
+    variant: markdown_github
+   html_document: default
 ---
 
 ## Introduction
@@ -88,23 +91,24 @@ By default all steps are set to 'run', but a typical scenario can be to run the 
 
 ### 3. Update the experimental info table. 
 A template was created (at *report/exp_metrics.csv*) with some initial info and default values. Edit it and fill in the missing information. Here is the expected info to fill in - make sure to fill in the values as described below, unless in free text fields. Select values out of the given options, and if an option is missing, add it also here so future users will use it. No extra spaces, change of case etc..
-- Run_name: must match RUN_NAME (run folder name)
-- Treatment: None by default, free text, but have a look at existing values and try to conform with them.
-- Tissue_state: Fresh/Frozen
-- Cells_or_Nuclei: Cells/Nuclei
-- Dissociation: Miltenyi/TST (Miltenyi is the default). If you have a different method, add it also here for documentation)
-- FACS_sort: Y/N
-- Processing_time_in_minutes: number of minutes, NA if not known.
-- Submission_date: Current date is defualt, make sure to update (dd/mm/yyyy)
-- cDNA_prep_date Current date is defualt, make sure to update (dd/mm/yyyy)
-- Cell_counter: Sorting/bicell/Luna_FL/Luna_BF (Sorting is the default)
-- Chemistry: SC3Pv3/SC3Pv2 (SC3Pv3 is default, consult with cellranger count chemistry parameter for other options)
-- Loaded_total_cells: Number
-- Loaded_viable_cells: Number
-- Viability: Fraction (0-1)
-- Seq_machine: NovaSeq/HiSeq4000 (NovaSeq is default)
-- Flowcell: S1/S2/S4 (no default)
-- Num_lanes: Number
+
+* Run_name: must match RUN_NAME (run folder name)
+* Treatment: None by default, free text, but have a look at existing values and try to conform with them.
+* Tissue_state: Fresh/Frozen
+* Cells_or_Nuclei: Cells/Nuclei
+* Dissociation: Miltenyi/TST (Miltenyi is the default). If you have a different method, add it also here for documentation)
+* FACS_sort: Y/N
+* Processing_time_in_minutes: number of minutes, NA if not known.
+* Submission_date: Current date is defualt, make sure to update (dd/mm/yyyy)
+* cDNA_prep_date Current date is defualt, make sure to update (dd/mm/yyyy)
+* Cell_counter: Sorting/bicell/Luna_FL/Luna_BF (Sorting is the default)
+* Chemistry: SC3Pv3/SC3Pv2 (SC3Pv3 is default, consult with cellranger count chemistry parameter for other options)
+* Loaded_total_cells: Number
+* Loaded_viable_cells: Number
+* Viability: Fraction (0-1)
+* Seq_machine: NovaSeq/HiSeq4000 (NovaSeq is default)
+* Flowcell: S1/S2/S4 (no default)
+* Num_lanes: Number
 
 ### 4. Download the input fastq files. 
 Send a single job to the cluster from your run folder (giving it a more than enough 4 hours limit):

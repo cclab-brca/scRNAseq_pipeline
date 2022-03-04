@@ -1,2 +1,243 @@
-# scRNAseq_pipeline
-Pipeline for processing scRNA-seq (10X) and Visium data  
+## Introduction
+
+This pipeline aims to be flexible and process all flavours of single
+cell transcriptomics, including human-mouse samples (either PDXs or
+multiplexed samples), human only (supporting patients de-multiplex) and
+mouse only samples (supporting strain de-multiplexing). Processing
+differs a bit if handling human-mouse cells, in which case further human
+vs mouse plots will be generated and cells will be assigned with a human
+or mouse identity.
+
+## Processing steps
+
+Download the associated fastq input files from genomics (once for all
+samples in the run).
+
+Per sample:
+
+1.  Run “cellranger count”
+2.  Use CellBender to remove ambient noise (optional)
+3.  Further filtering of cellranger’s valid cells by number of UMIs and
+    %mito UMIs
+4.  Run souporcell on the QC filtered cells (optional)
+5.  Integrate souporcell output and create a metacell count matrix with
+    QC and souporcell data.
+
+## Software requirements
+
+### R packages
+
+The pipeline uses this R binary:
+/home/bioinformatics/software/R/R-4.0.current/bin/R You need to install
+the following packages from within a session invoked by the above R
+binary:
+
+-   data.table
+-   dplyr
+-   tibble
+-   MASS
+-   ggplot2
+-   officer
+-   Seurat (only if using CellBender)
+
+You can install all these with this command:
+
+    install.packages(pkgs=c('data.table', 'dplyr', 'tibble', 'MASS', 'ggplot2', 'officer', 'Seurat'))
+
+-   metacell (see how to install here:
+    <https://github.com/tanaylab/metacell>)
+
+### CellBender
+
+CellBender is used to remove ambient noise from the cells. See:
+<https://cellbender.readthedocs.io/en/latest/index.html>
+
+1.  Before installing CellBender make sure you have *anaconda*
+    installed. If you need to install *anaconda* you can opt for the
+    lightweight *miniconda* installation. Follow installation
+    instructions for *miniconda* on *Linux* here:
+    <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>
+    **Important**: Since space on your home directory is limited, change
+    installation directory to a sub folder under your user directory on
+    scratcha (e.g. for user foo01
+    */mnt/scratcha/cclab/foo01/software/anaconda3*)
+2.  Install *CellBender* following the installation instructions for
+    **GPU** here:
+    <https://cellbender.readthedocs.io/en/latest/installation/index.html>
+    -   Run commands from your software folder (installation will clone
+        the code into a sub-directory so better to put it there)
+    -   Change the conda environment name from *CellBender* to
+        *CellBenderGPU*. So the first steps should be:
+
+    <!-- -->
+
+        conda create -n CellBenderGPU python=3.7
+        conda activate CellBenderGPU
+
+    -   After cloning the repository (the *git clone* step) make the
+        following code edits (otherwise runs on our GPU nodes fail
+        because of lack of memory):
+        -   File *cellbender/remove_background/infer.py* at line 379:
+            change batch_size from 20 to 5
+        -   File *cellbender/remove_background/consts.py*: change the
+            value of CELLS_POSTERIOR_REG_CALC from 100 to 25
+    -   Continue with the installation steps (e.g. *pip install …*)
+    -   Run the pipeline from a new shell window so that the
+        installation will be recognised.
+
+## Running the pipeline
+
+### 1. Create the run folder
+
+From a shell session on the current directory (currently
+/mnt/scratchb/cclab/scRNAseq) run:
+
+    make init SLX_RUN=<YOUR SLX RUN NUMBER> RUN_NAME=<YOUR RUN NAME>
+
+For example: make init SLX-RUN=SLX-19799 RUN_NAME=Yaniv_snRNAseq_pilot1
+No spaces or special characters please, and will be nice if RUN_NAME
+begins with your name.
+
+This will create a folder for your run names RUN_NAME under the runs
+directory, will link the necessary scripts there and the genomics html
+reports to the report folder, and will download the metadata file to the
+metadata folder.
+
+It is really important to view the metadata file and make sure there’s
+only one there and that it has the correct information.
+
+### Multiple sample files under the metadata folder
+
+In case you have multiple sequencing runs that you want to pool
+together, you’ll have a sample file per seq run under the metadata
+folder. Make sure the sample names and barcodes match across the sample
+files, and then delete all but one (since the pipeline expects a single
+samples file per run). Then run:
+
+    make init_report SLX_RUN=<YOUR SLX RUN NUMBER> RUN_NAME=<YOUR RUN NAME>
+
+This will create the template csv file with experimental info under the
+report folder. **No need to run this if you have a single sample file
+under the metadata folder**.
+
+### 2. Update parameters file
+
+The next step will be to update the paramaters file named
+*scRNA_params.sh*. Edit the template file copied to your run folder,
+you’ll find there explanations on how to fill it in.
+
+Note that you can control the steps that will be executed - each of the
+5 main steps (cellranger, CellBender, QC filter, Souporcell and final
+mat data integration) can be set to run (default), rerun (execute even
+if output exists), or skip.
+
+By default all steps are set to ‘run’, but a typical scenario can be to
+run the pipeline until (including) the QC filter step and take a look at
+the cells that passed the QC filtering. If all is well, continue to run
+the next steps. Otherwise, either manually set the cutoffs for the whole
+run or for specific samples (see instructions in the *scRNA_params.sh*
+file), set the filter QC step to ‘rerun’ and re-launch the pipeline.
+
+### 3. Update the experimental info table.
+
+A template was created (at *report/exp_metrics.csv*) with some initial
+info and default values. Edit it and fill in the missing information.
+Here is the expected info to fill in - make sure to fill in the values
+as described below, unless in free text fields. Select values out of the
+given options, and if an option is missing, add it also here so future
+users will use it. No extra spaces, change of case etc..
+
+-   Run_name: must match RUN_NAME (run folder name)
+-   Treatment: None by default, free text, but have a look at existing
+    values and try to conform with them.
+-   Tissue_state: Fresh/Frozen
+-   Cells_or_Nuclei: Cells/Nuclei
+-   Dissociation: Miltenyi/TST (Miltenyi is the default). If you have a
+    different method, add it also here for documentation)
+-   FACS_sort: Y/N
+-   Processing_time_in_minutes: number of minutes, NA if not known.
+-   Submission_date: Current date is defualt, make sure to update
+    (dd/mm/yyyy)
+-   cDNA_prep_date Current date is defualt, make sure to update
+    (dd/mm/yyyy)
+-   Cell_counter: Sorting/bicell/Luna_FL/Luna_BF (Sorting is the
+    default)
+-   Chemistry: SC3Pv3/SC3Pv2 (SC3Pv3 is default, consult with cellranger
+    count chemistry parameter for other options)
+-   Loaded_total_cells: Number
+-   Loaded_viable_cells: Number
+-   Viability: Fraction (0-1)
+-   Seq_machine: NovaSeq/HiSeq4000 (NovaSeq is default)
+-   Flowcell: S1/S2/S4 (no default)
+-   Num_lanes: Number
+
+### 4. Download the input fastq files.
+
+Send a single job to the cluster from your run folder (giving it a more
+than enough 4 hours limit):
+
+    sbatch -t 4:0:0 slurm_scRNA_get_fastqs.sh
+
+This will download the fastq files to the *fastq/raw* folder.
+
+### 5. Send the processing jobs to the cluster.
+
+A job per sample will be sent, and each one will generate more jobs
+along the way, but it shouldn’t bother you. To send the jobs, type under
+your run folder:
+
+    sbatch -t 36:00:00 -a 1-8 slurm_scRNA_pipeline.sh
+
+The -t options sets the jobs time limit to 36 hours (jobs running longer
+than their time limit are killed). This should be more than enough for
+most samples, actually 12 hours will usually be enough. But if the
+cluster is really jammed so 24 hours might not be enough for heavy
+samples (\>10K cells).
+
+The -a option marks which samples to process. Look at your metadata
+table, if you have 5 samples then you should type " -a 1-5" If you have
+8 samples than you better restrict the number of concurrent jobs to 4 by
+typing: “-a 1-8%4” If you just want to re-run samples 2, 5 and 8 then:
+“-a 2,5,8” etc.
+
+To see your running jobs type:
+
+    squeue | grep $USER
+
+To cancel a job:
+
+    scancel <JOB_NUMBER>
+
+To cancel all your jobs (e.g. if your user name on the cluster is foo01:
+
+    scancel -u foo01
+
+When the job is finished a metacell matrix will be generated under your
+folder runs *scdb* dir and figures under the *figs* dir.
+
+#### Viewing QC figures
+
+It is highly recommended to break up the run and examine the QC figures
+before running the Souporcell step. To help you do that you can dump all
+QC figures to a single powerpoint file which will be under the *report*
+folder of your run folder. To create it type from a terminal at the base
+dir folder:
+
+    make qcs_to_ppt RUN_NAME=<YOUR RUN NAME>
+
+Note that you can run it after the first QC filtering step and after the
+final step of the pipeline (which adds the souporcell figures).
+
+### 7. Generate reports.
+
+Under the base dir folder (*/mnt/scratchb/cclab/scRNAseq*):
+
+    make report RUN_NAME=<YOUR RUN_NAME>
+
+This will create a sample metrics csv file under the report folder and
+will create links in there to all cellranger html sample reports. The
+metrics will also be added to the lab master sample metrics file
+(*/mnt/scratchb/cclab/scRNAseq/scRNAseq_samples_metrics.csv*) if the
+entries are not already there (recognised by run name and sample names,
+so if you want to update existing entries first delete them and then run
+“make report”).
