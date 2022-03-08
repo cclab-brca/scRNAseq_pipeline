@@ -66,6 +66,8 @@ if (file.exists(soc_clust_fn) && ! "soc_fine_assign" %in% colnames(md)) {
     
     cl_dict = apply(cl_t, 1, function(v) colnames(cl_t)[which.max(v)])
     soc$specie = cl_dict[as.character(soc$assignment)]
+    bad_assign_ind = soc$is_hg & soc$specie == 'Mouse' | !soc$is_hg & soc$specie == 'Human'
+    soc$specie[bad_assign_ind] = 'unassigned'
     soc$fine_assign = ifelse(soc$status == "singlet", paste(soc$status, soc$specie), soc$status)
     
     # deal with missed doublets (by soc hard cutoff of Prob[doub] > Prob[singlet]) - kmeans hg and mm umis, mark kmeans doublet cluster
