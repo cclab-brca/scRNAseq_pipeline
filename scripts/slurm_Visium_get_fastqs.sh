@@ -13,7 +13,7 @@ set -xeu
 
 # Load specific run's parameters
 WD=$PWD
-PARAMS_FN=$WD/scRNA_params.sh
+PARAMS_FN=$WD/Visium_params.sh
 if [ ! -e $PARAMS_FN ]
 then
         echo "Error: missing parameters file ($PARAMS_FN)"
