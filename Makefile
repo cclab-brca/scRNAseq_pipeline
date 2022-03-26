@@ -68,7 +68,7 @@ visium_init:
 	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/*.csv runs/Visium/$(RUN_NAME)/metadata
 	ln -sf $(BASE_DIR)/scripts/slurm_Visium_pipeline.sh runs/Visium/$(RUN_NAME)/slurm_Visium_pipeline.sh
-	ln -sf $(BASE_DIR)/scripts/slurm_Visium_get_fastqs.sh runs/$(RUN_NAME)/slurm_Visium_get_fastqs.sh
+	ln -sf $(BASE_DIR)/scripts/slurm_Visium_get_fastqs.sh runs/Visium/$(RUN_NAME)/slurm_Visium_get_fastqs.sh
 	cat scripts/Visium_params.sh \
 	| sed 's/__RUN_NAME__/$(RUN_NAME)/g' \
 	| sed 's/__SLX_RUN__/$(SLX_RUN)/g' \
