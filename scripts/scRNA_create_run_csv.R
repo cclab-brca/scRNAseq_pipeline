@@ -13,7 +13,7 @@ stopifnot(length(samp_md_fn) == 1)
 
 samp_md = read.csv(samp_md_fn) %>%
   mutate(User = Sys.getenv("USER"),
-         Run_name = "",
+         Run_name = run_name,
          Treatment = "None",
          Tissue_state = "Frozen",
          Cells_or_Nuclei = "Cells",

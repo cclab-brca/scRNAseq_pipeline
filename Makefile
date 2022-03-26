@@ -5,6 +5,11 @@ BASE_DIR = /mnt/scratchb/cclab/scRNAseq
 TMP_DIR = /tmp/tmp.$(USER).$(SLX_RUN)
 CLARITY_JAR = $(BASE_DIR)/software/clarity-tools.jar
 
+#############################
+# 
+# scRNA-seq: using cellranger
+# 
+#############################
 # 1. Init
 # 
 # To run: make init RUN_NAME=<...> SLX_RUN=<...>
@@ -47,6 +52,32 @@ clean_all: clean_fastq
 	rm -f runs/$(RUN_NAME)/*/outs/*bam runs/$(RUN_NAME)/*/outs/souporcell/souporcell_minimap_tagged_sorted.bam
 
 
+#############################
+# 
+# Visium: using spaceranger
+# 
+#############################
+# 1. Init
+# 
+# To run: make visium_init RUN_NAME=<...> SLX_RUN=<...>
+# Creates the output folder under runs/Visium/$(RUN_NAME) and downloads the metadata file under metadata folder. Check that
+# there is only one metadata file there and that it has the correct information.
+visium_init:
+	mkdir -p runs/Visium/$(RUN_NAME)/metadata
+	mkdir -p runs/Visium/$(RUN_NAME)/fastq/raw
+	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
+	mv $(TMP_DIR)/$(SLX_RUN)/*.csv runs/Visium/$(RUN_NAME)/metadata
+	ln -sf $(BASE_DIR)/scripts/slurm_Visium_pipeline.sh runs/Visium/$(RUN_NAME)/slurm_Visium_pipeline.sh
+	ln -sf $(BASE_DIR)/scripts/slurm_Visium_get_fastqs.sh runs/$(RUN_NAME)/slurm_Visium_get_fastqs.sh
+	cat scripts/Visium_params.sh \
+	| sed 's/__RUN_NAME__/$(RUN_NAME)/g' \
+	| sed 's/__SLX_RUN__/$(SLX_RUN)/g' \
+	> runs/Visium/$(RUN_NAME)/Visium_params.sh
+	chmod 755 runs/Visium/$(RUN_NAME)/Visium_params.sh
+	mkdir -p runs/Visium/$(RUN_NAME)/report/tmp
+	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '$(SLX_RUN).*.html' -d $(TMP_DIR)
+	mv $(TMP_DIR)/$(SLX_RUN)/$(SLX_RUN).*.html runs/Visium/$(RUN_NAME)/report
+	
 
   
 
