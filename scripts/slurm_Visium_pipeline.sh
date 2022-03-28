@@ -38,9 +38,14 @@ then
   exit 1
 fi
 
-IMAGE_FILE=$(grep $SAMPLE_NAME $SLIDE_DATA_FILE | awk -F',' '{ print $1 }' | tr -d '"')
-SN=$(grep $SAMPLE_NAME $SLIDE_DATA_FILE | awk -F',' '{ print $3 }' | tr -d '"')
-AREA=$(grep $SAMPLE_NAME $SLIDE_DATA_FILE | awk -F',' '{ print $4 }' | tr -d '"')
+# Individual_image_name field
+IMAGE_FILE=$(grep $SAMPLE_NAME $SLIDE_DATA_FILE | awk -F',' '{ print $2 }' | tr -d '"')
+
+# Serial_number field
+SN=$(grep $SAMPLE_NAME $SLIDE_DATA_FILE | awk -F',' '{ print $4 }' | tr -d '"')
+
+# Area field
+AREA=$(grep $SAMPLE_NAME $SLIDE_DATA_FILE | awk -F',' '{ print $5 }' | tr -d '"')
 
 # Run spaceranger
 if [ "${RUN_SPACERANGER}" == "rerun"  -a -e ${WD}/${SAMPLE_NAME} ]

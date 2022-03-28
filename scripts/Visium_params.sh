@@ -20,12 +20,6 @@ RUN_SPACERANGER=run
 # refdata-gex-mm10-2020-A (mouse)
 REF_SPACERANGER_PATH=$BASE_DIR/ref_data/refdata-gex-GRCh38-and-mm10-2020-A-eGFP
 
-#### 10x library chemistry. Options are: 'auto' for autodetection, 'threeprime' for Single Cell 3', 
-# 'fiveprime' for  Single Cell 5', 'SC3Pv1' or 'SC3Pv2' or 'SC3Pv3' for Single Cell 3' v1/v2/v3, 
-# 'SC5P-PE' or 'SC5P-R2' for Single Cell 5', paired-end/R2-only, 'SC-FB' for Single Cell Antibody-only 3' v2 or 5' [default: auto] 
-CHEM=SC3Pv3
-
-
 
 #### QC filter cutoffs - by default they are all 'auto' for automatic detection of cutoffs but can be changed to actual values (e.g. MIN_HUMAN_NON_MT_UMIS=750, MAX_HUMAN_F_MITO=0.5)
 # To set sample specific values first run the RUN_QC_FILTER step with 'auto', it will create csv files per sample under the report/tmp folder with the automatic detected values.
