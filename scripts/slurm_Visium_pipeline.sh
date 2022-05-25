@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
 #SBATCH --signal=2
-#SBATCH --mem=64G
+#SBATCH --mem=64
 #SBATCH -o VISIUM.%a.out
 #SBATCH -e VISIUM.%a.err
 
