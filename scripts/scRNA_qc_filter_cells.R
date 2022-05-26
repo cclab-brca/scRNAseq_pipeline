@@ -282,7 +282,6 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   h = hist(md$hg_f_mito[is_hg], breaks=seq(0, 1, len=50), plot=F)
   par(mai=c(pm[1], 0, pm[3], 0.1))
   barplot(h$count, space=0, col='darkgray', horiz=T, border=NA)
-  abline(h=max_hg_f_mito, lty=2)
   
   par(mai=c(pm[1], pm[2]+pm[4]-0.1, pm[3], 0.1))
   plot(log2(md$mm_tot_non_mt_umis[!is_hg]), md$mm_f_mito[!is_hg], pch=19, cex=0.3, col=ifelse(md$valid_by_umis[!is_hg], 'black', 'red'), xlab="non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Mouse (%d)", sample_name, sum(!is_hg)), ylim=0:1)
@@ -291,7 +290,6 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   h = hist(md$mm_f_mito[!is_hg], breaks=seq(0, 1, len=50), plot=F)
   par(mai=c(pm[1], 0, pm[3], 0.1))
   barplot(h$count, space=0, col='darkgray', horiz=T, border=NA)
-  abline(h=max_mm_f_mito, lty=2)
   dev.off()
 
   png(scfigs_fn(sample_name, "hg_vs_mm_UMIs"), 800, 400)
