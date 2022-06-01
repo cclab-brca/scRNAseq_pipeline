@@ -2,6 +2,7 @@
 
 # Demultiplex Metacell matrix to human and mouse submatrices (or just add the SoC output to the mat) by souporcell.
 
+require(data.table, quietly = T)
 require(metacell, quietly = T)
 require(dplyr, quietly = T)
 require(tibble, quietly = T)
