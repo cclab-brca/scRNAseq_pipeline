@@ -12,6 +12,7 @@ RUN_CELLBENDER=run
 RUN_QC_FILTER=run
 RUN_SOC=run
 RUN_MAT_INTEGRATION=run
+RUN_SOC_ON_HG_SINGLETS=skip
 
 #### Cell ranger reference genome, one of the following:
 # refdata-gex-GRCh38-2020-A (human)

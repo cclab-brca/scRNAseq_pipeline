@@ -146,9 +146,11 @@ if (file.exists(soc_clust_fn) && ! "soc_fine_assign" %in% colnames(md)) {
     
     if (length(hg_cells) > 1) {
       scdb_add_mat(paste0(sample_name, "_hg"), tgScMat(hg_m, 'umi', md[hg_cells, , drop=F]))
+      fwrite(as.data.frame(hg_cells), file=sprintf("%s/qc_hg_singlet_filt_barcodes.tsv.gz", samp_dir), quote=F, sep="\t", col.names = F, compress="gzip")
     }
     if (length(mm_cells) > 1) { 
       scdb_add_mat(paste0(sample_name, "_mm"), tgScMat(mm_m, 'umi', md[mm_cells, , drop=F]))
+      fwrite(as.data.frame(mm_cells), file=sprintf("%s/qc_mm_singlet_filt_barcodes.tsv.gz", samp_dir), quote=F, sep="\t", col.names = F, compress="gzip")
     }
   } else {
     

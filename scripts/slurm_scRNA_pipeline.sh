@@ -112,3 +112,28 @@ if [ "${RUN_MAT_INTEGRATION}" == "rerun" ] || [ "${RUN_MAT_INTEGRATION}" == "run
 then
         ${BASE_DIR}/scripts/scRNA_SoC_finalise.R $WD $SAMPLE_NAME $HUMAN_PREF $MOUSE_PREF
 fi
+
+# Run souporcell on human QC filtered singlet cells (optional)
+if [ "${RUN_SOC_ON_HG_SINGLETS}" == "rerun"  -a -e ${WD}/${SAMPLE_NAME}/outs/souporcell_hg ]
+then
+        echo "*** Deleting ${SAMPLE_NAME}/outs/souporcell_hg folder and reruning Souporcell on human QC filtered singlets ***"
+        rm -rf ${WD}/${SAMPLE_NAME}/outs/souporcell_hg
+fi
+
+N_HG_BARCODES=$(zcat ${WD}/${SAMPLE_NAME}/outs/qc_hg_singlet_filt_barcodes.tsv.gz | wc -l)
+if [ "${RUN_SOC_ON_HG_SINGLETS}" == "rerun" ] || [ "${RUN_SOC_ON_HG_SINGLETS}" == "run" -a ! -e ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/consensus.done ]
+then
+	if (( $N_HG_BARCODES <= 50 ))
+	then
+		echo "Warning: only ${N_HG_BARCODES} human singlet cells passed QC, too few for souporcell, skipping."
+	else	
+    cd $BASE_DIR
+		singularity exec -B $BASE_DIR:/dummy_dir $BASE_DIR/software/souporcell.sif souporcell_pipeline.py \
+		   -i /dummy_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/possorted_genome_bam.bam \
+		   -b /dummy_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/qc_hg_singlet_filt_barcodes.tsv.gz \
+		   -f /dummy_dir/${SOC_REF_FASTA} \
+		   -t $SLURM_CPUS_PER_TASK -o /dummy_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/souporcell_hg -k $SOC_N_CLUSTERS --ignore True
+		cd ${WD}
+	fi
+fi
+
