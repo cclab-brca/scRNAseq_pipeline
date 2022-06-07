@@ -113,27 +113,58 @@ then
         ${BASE_DIR}/scripts/scRNA_SoC_finalise.R $WD $SAMPLE_NAME $HUMAN_PREF $MOUSE_PREF
 fi
 
-# Run souporcell on human QC filtered singlet cells (optional)
+# Run souporcell on human QC filtered singlet cells with K from 1 to MAX_SOC_HG_K (optional)
 if [ "${RUN_SOC_ON_HG_SINGLETS}" == "rerun"  -a -e ${WD}/${SAMPLE_NAME}/outs/souporcell_hg ]
 then
         echo "*** Deleting ${SAMPLE_NAME}/outs/souporcell_hg folder and reruning Souporcell on human QC filtered singlets ***"
         rm -rf ${WD}/${SAMPLE_NAME}/outs/souporcell_hg
 fi
 
+FILES_TO_LINK="fastqs.done remapping.done minimap.err retag.err souporcell_minimap_tagged_sorted.bam souporcell_minimap_tagged_sorted.bam.bai retagging.done bcftools.err variants.done souporcell_merged_sorted_vcf.vcf.gz.tbi souporcell_merged_sorted_vcf.vcf.gz barcodes.tsv alt.mtx vartrix.done ref.mtx"
+
+COM_VAR_CMD=""
+if [ "${SOC_ON_HG_USE_COMMON_VARIANTS}" == "TRUE" ]
+then
+  COM_VAR_CMD="--common_variants /base_dir/ref_data/common_variants_grch38_modChrNames.vcf"
+fi
+
 N_HG_BARCODES=$(zcat ${WD}/${SAMPLE_NAME}/outs/qc_hg_singlet_filt_barcodes.tsv.gz | wc -l)
-if [ "${RUN_SOC_ON_HG_SINGLETS}" == "rerun" ] || [ "${RUN_SOC_ON_HG_SINGLETS}" == "run" -a ! -e ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/consensus.done ]
+if [ "${RUN_SOC_ON_HG_SINGLETS}" == "rerun" ] || [ "${RUN_SOC_ON_HG_SINGLETS}" == "run" -a ! -e ! -e ${WD}/${SAMPLE_NAME}/outs/soc_on_hg_singlets.done ]
 then
 	if (( $N_HG_BARCODES <= 50 ))
 	then
 		echo "Warning: only ${N_HG_BARCODES} human singlet cells passed QC, too few for souporcell, skipping."
-	else	
-    cd $BASE_DIR
-		singularity exec -B $BASE_DIR:/dummy_dir $BASE_DIR/software/souporcell.sif souporcell_pipeline.py \
-		   -i /dummy_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/possorted_genome_bam.bam \
-		   -b /dummy_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/qc_hg_singlet_filt_barcodes.tsv.gz \
-		   -f /dummy_dir/${SOC_REF_FASTA} \
-		   -t $SLURM_CPUS_PER_TASK -o /dummy_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/souporcell_hg -k $SOC_N_CLUSTERS --ignore True
-		cd ${WD}
-	fi
+	else
+	  if [ ! -e ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k1_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}/consensus.done ]
+    then
+      echo "Running first souporcell run with K=1"
+      cd $BASE_DIR
+      singularity exec -B $BASE_DIR:/base_dir,$WD:/wdir $BASE_DIR/software/souporcell.sif souporcell_pipeline.py \
+        -i /base_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/possorted_genome_bam.bam \
+        -b /base_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/qc_hg_singlet_filt_barcodes.tsv.gz \
+        -f /base_dir/${SOC_REF_FASTA} ${COM_VAR_CMD} \
+        -t $SLURM_CPUS_PER_TASK -o /base_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/souporcell_hg/k1_comVar${SOC_ON_HG_USE_COMMON_VARIANTS} -k 1 --ignore True
+    fi
+    for k in $(seq 2 ${SOC_ON_HG_SINGLETS_MAX_K})
+    do
+      if [ ! -e ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}/consensus.done ]
+      then
+        echo "Running souporcell for K" $k
+        mkdir ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}
+        cd ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}
+        for file in $FILES_TO_LINK
+        do
+          ln -sf ../${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k1_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}/${file} .
+        done
+        cd $BASE_DIR
+        singularity exec -B $BASE_DIR:/base_dir,$WD:/wdir $BASE_DIR/software/souporcell.sif souporcell_pipeline.py \
+          -i /base_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/possorted_genome_bam.bam \
+          -b /base_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/qc_hg_singlet_filt_barcodes.tsv.gz \
+          -f /base_dir/${SOC_REF_FASTA} ${COM_VAR_CMD} \
+          -t $SLURM_CPUS_PER_TASK -o /base_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS} -k ${k} --ignore True
+      fi
+    done
+    ${BASE_DIR}/scripts/scRNA_add_SoC_cluster_info.R $WD $SAMPLE_NAME $SOC_ON_HG_USE_COMMON_VARIANTS $SOC_ON_HG_SINGLETS_MAX_K $SOC_ON_HG_LL_IMPROVE_CUTOFF
+  fi
 fi
 

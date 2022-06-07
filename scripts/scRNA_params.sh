@@ -57,9 +57,18 @@ MITO_FILTER_BY=frac
 HUMAN_PREF=GRCh38
 MOUSE_PREF=mm10__
 
-##### Souporcell (SoC)
+##### Souporcell (SoC) with K=2 to differentiate human and mouse cells
 # SoC reference fasta (expecting local path). Ideally same as REF_CELLRANGER_PATH, but currently SoC cannot handle the combind hg-mm genome, so using only the human genome.
 SOC_REF_FASTA=ref_data/refdata-gex-GRCh38-2020-A/fasta/genome.fa
 # SoC number of clusters (to skip running SoC enter SOC_N_CLUSTERS=0)
 SOC_N_CLUSTERS=2
+
+#### Souporcell on human QC filtered cells to cluster them by SNVs (optional)
+SOC_ON_HG_SINGLETS_MAX_K=8
+
+# Use common variants SNVs from 1k genomes (TRUE/FALSE)
+SOC_ON_HG_USE_COMMON_VARIANTS=FALSE
+
+# For finding optimal K with elbow on log loss: cutoff on LL improvement (choose smallest k s.t. LL(k+1) / LL(k) <= 1 - cutoff)
+$SOC_ON_HG_LL_IMPROVE_CUTOFF=0.05
 
