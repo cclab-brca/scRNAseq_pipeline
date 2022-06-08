@@ -150,7 +150,7 @@ then
       if [ ! -e ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}/consensus.done ]
       then
         echo "Running souporcell for K" $k
-        mkdir ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}
+        mkdir -p ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}
         cd ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}
         for file in $FILES_TO_LINK
         do
