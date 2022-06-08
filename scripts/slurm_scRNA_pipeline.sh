@@ -154,7 +154,7 @@ then
         cd ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}
         for file in $FILES_TO_LINK
         do
-          ln -sf ../${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k1_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}/${file} .
+          ln -sf ${WD}/${SAMPLE_NAME}/outs/souporcell_hg/k1_comVar${SOC_ON_HG_USE_COMMON_VARIANTS}/${file} .
         done
         cd $BASE_DIR
         singularity exec -B $BASE_DIR:/base_dir,$WD:/wdir $BASE_DIR/software/souporcell.sif souporcell_pipeline.py \
