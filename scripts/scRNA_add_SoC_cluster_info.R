@@ -28,7 +28,7 @@ stopifnot(!is.null(mat))
 
 # Find best K (first K that K+1 improved log loss by less than ll_improve_cutoff)
 mean_LL = sapply(1:max_k, function(k) { 
-  x = read.table(sprintf("%s/soc_k%d_comVar%s/clusters.tsv", idir, k, common_variants), header=T) %>% filter(status == 'singlet'); 
+  x = read.table(sprintf("%s/k%d_comVar%s/clusters.tsv", idir, k, common_variants), header=T) %>% filter(status == 'singlet'); 
   sum(apply(x[,6:ncol(x), drop=F], 1, max)) 
   })
 
@@ -40,7 +40,7 @@ plot(1:max_k, mean_LL, pch=ifelse(1:max_k %in% best_k, 19, 21), main=sample_name
 dev.off()
 
 # add clusters assignments to mat
-best_dir = sprintf("%s/soc_k%d_comVar%s", idir, best_k, common_variants)
+best_dir = sprintf("%s/k%d_comVar%s", idir, best_k, common_variants)
 mat@cell_metadata$soc_cl = NA
 cl = read.table(sprintf("%s/clusters.tsv", best_dir), header=T) %>% filter(status == 'singlet')
 mat@cell_metadata[cl$barcode, 'soc_cl'] = as.numeric(cl$assignment) + 1
