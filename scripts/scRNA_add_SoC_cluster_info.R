@@ -40,7 +40,7 @@ plot(1:max_k, mean_LL, pch=ifelse(1:max_k %in% best_k, 19, 21), main=sample_name
 dev.off()
 
 # add clusters assignments to mat
-best_dir = sprintf("%s/soc_k%d_comVar%s", idir, common_variants, best_k)
+best_dir = sprintf("%s/soc_k%d_comVar%s", idir, best_k, common_variants)
 mat@cell_metadata$soc_cl = NA
 cl = read.table(sprintf("%s/clusters.tsv", best_dir), header=T) %>% filter(status == 'singlet')
 mat@cell_metadata[cl$barcode, 'soc_cl'] = as.numeric(cl$assignment) + 1
