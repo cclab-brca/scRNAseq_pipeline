@@ -35,7 +35,7 @@ mean_LL = sapply(1:max_k, function(k) {
 best_k = min(which(mean_LL[-1] / mean_LL[-max_k] >= (1 - ll_improve_cutoff)))
 
 # elbow plot
-scfigs_fn(sample_name, sprintf("soc_on_hg_cells_comVar%s_maxK%d_fLLcutoff%.2f_LL_vs_K", common_variants, max_k, ll_improve_cutoff), 300, 300)
+png(scfigs_fn(sample_name, sprintf("soc_on_hg_cells_comVar%s_maxK%d_fLLcutoff%.2f_LL_vs_K", common_variants, max_k, ll_improve_cutoff)), 300, 300)
 plot(1:max_k, mean_LL, pch=ifelse(1:max_k %in% best_k, 19, 21), main=sample_name, xlab='K', ylab="singlets mean log loss")
 dev.off()
 
