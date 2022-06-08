@@ -129,7 +129,7 @@ then
 fi
 
 N_HG_BARCODES=$(zcat ${WD}/${SAMPLE_NAME}/outs/qc_hg_singlet_filt_barcodes.tsv.gz | wc -l)
-if [ "${RUN_SOC_ON_HG_SINGLETS}" == "rerun" ] || [ "${RUN_SOC_ON_HG_SINGLETS}" == "run" -a ! -e ! -e ${WD}/${SAMPLE_NAME}/outs/soc_on_hg_singlets.done ]
+if [ "${RUN_SOC_ON_HG_SINGLETS}" == "rerun" ] || [ "${RUN_SOC_ON_HG_SINGLETS}" == "run" -a ! -e ${WD}/${SAMPLE_NAME}/outs/soc_on_hg_singlets.done ]
 then
 	if (( $N_HG_BARCODES <= 50 ))
 	then
