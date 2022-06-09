@@ -62,7 +62,7 @@ then
 	        $INCLUDE_INTRONS \
                 --localcores $SLURM_CPUS_PER_TASK \
                 --localmem 128 \
-                --maxjobs 80 \
+                --maxjobs 24 \
                 --jobmode slurm
 fi
 
