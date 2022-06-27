@@ -29,9 +29,14 @@ then
 fi
 
 META_FILE=$(ls -1 $BASE_DIR/runs/$RUN_NAME/metadata/*csv)
+BARCODES=$(tail -n +2 ${META_FILE} | cut -f 2 -d ',')
 
 # Initial download to determine input type (old: tar per sample, new: fqs that need renaming)
-java -jar ${BASE_DIR}/software/clarity-tools.jar -l $SLX_RUN -f "${SLX_RUN}.*.tar" -f "${SLX_RUN}*.fq.gz" -d ${WD}/fastq/tmp 
+for bc in ${BARCODES}
+do
+        java -jar ${BASE_DIR}/software/clarity-tools.jar -l $SLX_RUN -f "${SLX_RUN}.${bc}.*.tar" -f "${SLX_RUN}.${bc}.*.fq.gz" -d ${WD}/fastq/tmp
+done
+
 if ls ${WD}/fastq/tmp/${SLX_RUN}/*lostreads* >& /dev/null
 then
         rm ${WD}/fastq/tmp/${SLX_RUN}/*lostreads*

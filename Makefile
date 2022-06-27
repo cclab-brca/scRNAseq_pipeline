@@ -44,14 +44,31 @@ qcs_to_ppt:
 # Entries of the current run will be added to the meta-table if they are not already there (identified by $RUN_NAME and sample names).
 report: qcs_to_ppt
 	$(BASE_DIR)/scripts/scRNA_make_report.R $(BASE_DIR) $(RUN_NAME)
-	
+
+# Maintenance	
 clean_fastq:
 	rm -f runs/$(RUN_NAME)/fastq/raw/*fastq.gz
 	
 clean_all: clean_fastq
-	rm -rf runs/$(RUN_NAME)/*/outs/*bam runs/$(RUN_NAME)/*/outs/souporcell/souporcell_minimap_tagged_sorted.bam
+	rm -f runs/$(RUN_NAME)/*/outs/*bam runs/$(RUN_NAME)/*/outs/souporcell/souporcell_minimap_tagged_sorted.bam runs/$(RUN_NAME)/*/SC_RNA_COUNTER_CS
 
-
+# Copy bams from run dir to a temporary storage (expects RUN_NAME and DEST_DIR to be specified) and vice-versa
+copy_bams:
+	$(eval SAMPLES := $(shell tail -n +2 runs/$(RUN_NAME)/metadata/*.csv | cut -f 4 -d ','))
+	for samp in $(SAMPLES); do \
+		mkdir -p $(DEST_DIR)/$(RUN_NAME)/$$samp/outs/souporcell; \
+		cp runs/$(RUN_NAME)/$$samp/outs/possorted_genome_bam.bam $(DEST_DIR)/$(RUN_NAME)/$$samp/outs/ ; \
+		cp runs/$(RUN_NAME)/$$samp/outs/souporcell/souporcell_minimap_tagged_sorted.bam $(DEST_DIR)/$(RUN_NAME)/$$samp/outs/souporcell/ ; \
+	done
+	
+copy_back_bams:
+	$(eval SAMPLES := $(shell tail -n +2 runs/$(RUN_NAME)/metadata/*.csv | cut -f 4 -d ','))
+	for samp in $(SAMPLES); do \
+		cp $(DEST_DIR)/$(RUN_NAME)/$$samp/outs/possorted_genome_bam.bam runs/$(RUN_NAME)/$$samp/outs/  ; \
+		cp $(DEST_DIR)/$(RUN_NAME)/$$samp/outs/souporcell/souporcell_minimap_tagged_sorted.bam runs/$(RUN_NAME)/$$samp/outs/souporcell/ ; \
+	done
+	
+	
 #############################
 # 
 # Visium: using spaceranger
