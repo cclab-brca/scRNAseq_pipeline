@@ -301,8 +301,8 @@ conda activate CellBenderGPU</code></pre>
 <div id="viewing-qc-figures" class="section level4">
 <h4>Viewing QC figures</h4>
 <p>It is highly recommended to break up the run and examine the QC figures before running the Souporcell step. To help you do that you can dump all QC figures to a single powerpoint file which will be under the <em>report</em> folder of your run folder. To create it type from a terminal at the base dir folder:</p>
-<pre><code>make qcs_to_ppt RUN_NAME=&lt;YOUR RUN NAME&gt;</code></pre>
-<p>Note that you can run it after the first QC filtering step and after the final step of the pipeline (which adds the souporcell figures).</p>
+<pre><code>make qcs_to_ppt RUN_NAME=&lt;YOUR RUN NAME&gt; HG_MM_MODE=&lt;run mode&gt;</code></pre>
+<p>Note that you can run it after the first QC filtering step and after the final step of the pipeline (which adds the souporcell figures). Run mode depends if you have human and/or mouse cells, and can be <em>hg_mm</em>, <em>hg</em> or <em>mm</em>.</p>
 </div>
 </div>
 <div id="generate-reports." class="section level3">

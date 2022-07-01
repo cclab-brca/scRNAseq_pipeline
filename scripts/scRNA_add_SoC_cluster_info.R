@@ -29,7 +29,7 @@ stopifnot(!is.null(mat))
 # Find best K (first K that K+1 improved log loss by less than ll_improve_cutoff)
 mean_LL = sapply(1:max_k, function(k) { 
   x = read.table(sprintf("%s/k%d_comVar%s/clusters.tsv", idir, k, common_variants), header=T) %>% filter(status == 'singlet'); 
-  sum(apply(x[,6:ncol(x), drop=F], 1, max)) 
+  mean(apply(x[,6:ncol(x), drop=F], 1, max)) 
   })
 
 best_k = min(which(mean_LL[-1] / mean_LL[-max_k] >= (1 - ll_improve_cutoff)))

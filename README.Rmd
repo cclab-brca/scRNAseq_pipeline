@@ -2,9 +2,9 @@
 title: Single-cell RNA-seq processing pipeline
 author: Yaniv Eyal-Lubling
 output: 
+   html_document: default
    md_document:
     variant: markdown_github
-   html_document: default
 ---
 
 ## Introduction
@@ -150,9 +150,10 @@ When the job is finished a metacell matrix will be generated under your folder r
 #### Viewing QC figures
 It is highly recommended to break up the run and examine the QC figures before running the Souporcell step. To help you do that you can dump all QC figures to a single powerpoint file which will be under the *report* folder of your run folder. To create it type from a terminal at the base dir folder:
 ```
-make qcs_to_ppt RUN_NAME=<YOUR RUN NAME>
+make qcs_to_ppt RUN_NAME=<YOUR RUN NAME> HG_MM_MODE=<run mode>
 ```
 Note that you can run it after the first QC filtering step and after the final step of the pipeline (which adds the souporcell figures).
+Run mode depends if you have human and/or mouse cells, and can be *hg_mm*, *hg* or *mm*.
 
 ### 7. Generate reports. 
 Under the base dir folder (*/mnt/scratchb/cclab/scRNAseq*):
