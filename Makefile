@@ -20,7 +20,7 @@ init:
 	mkdir -p runs/$(RUN_NAME)/fastq/raw
 	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/*.csv runs/$(RUN_NAME)/metadata
-	git clone git@github.com:cclab-brca/scRNAseq_pipeline.git runs/$(RUN_NAME)/scRNAseq_pipline
+	git clone git@github.com:cclab-brca/scRNAseq_pipeline.git runs/$(RUN_NAME)/scRNAseq_pipeline
 	ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_scRNA_pipeline.sh runs/$(RUN_NAME)/slurm_scRNA_pipeline.sh
 	ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline//scripts/slurm_scRNA_get_fastqs.sh runs/$(RUN_NAME)/slurm_scRNA_get_fastqs.sh
 	ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline//scripts/slurm_CellBenderGPU.sh runs/$(RUN_NAME)/slurm_CellBenderGPU.sh
