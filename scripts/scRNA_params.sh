@@ -8,18 +8,22 @@ BASE_DIR=/mnt/scratchb/cclab/scRNAseq
 
 # Which steps to run (only if their output does not exist), skip, and rerun (run even if output exists. Rerunning cellranger will delete the output folder and will will require rerunning the other steps too. Reruning souporcell will delete the outs/souporcell folder and rerun it from scratch)
 RUN_CELLRANGER=run
-RUN_CELLBENDER=run
+RUN_CLEAN_BARCODE_SWAPPING=skip
+RUN_CELLBENDER=skip
 RUN_QC_FILTER=run
-RUN_SOC=run
-RUN_MAT_INTEGRATION=run
+RUN_SOC=skip
+RUN_MAT_INTEGRATION=skip
 RUN_SOC_ON_HG_SINGLETS=skip
+
+#### Cell ranger executable
+CELLRANGER=$BASE_DIR/software/cellranger-5.0.0/bin/cellranger
 
 #### Cell ranger reference genome, one of the following:
 # refdata-gex-GRCh38-2020-A (human)
 # refdata-gex-GRCh38-and-mm10-2020-A (human and mouse)
 # refdata-gex-GRCh38-and-mm10-2020-A-eGFP (human, mouse and eGFP)
 # refdata-gex-mm10-2020-A (mouse)
-REF_CELLRANGER_PATH=$BASE_DIR/ref_data/refdata-gex-GRCh38-and-mm10-2020-A-eGFP
+REF_CELLRANGER_PATH=$BASE_DIR/ref_data/refdata-gex-GRCh38-and-mm10-2020-A
 
 #### 10x library chemistry. Options are: 'auto' for autodetection, 'threeprime' for Single Cell 3', 
 # 'fiveprime' for  Single Cell 5', 'SC3Pv1' or 'SC3Pv2' or 'SC3Pv3' for Single Cell 3' v1/v2/v3, 
@@ -28,6 +32,9 @@ CHEM=SC3Pv3
 
 # Count reads mapped to introns? (leave empty for scRNAseq, "--include-introns" if single-nucleus RNA-seq, and "by_sample_name" to use introns if SAMPLE_NAME contains "nuclei")
 INCLUDE_INTRONS=""
+
+#### Clean barcode swapping with dropletUtils::swappedDrops
+SWAPPED_DROPS_MIN_FRAC=0.9
 
 #### CellBender: remove ambient noise and recall non-empty cells
 # Requires installing an anaconda environment named CellBenderGPU (see instructions in the README file).

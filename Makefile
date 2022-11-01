@@ -20,10 +20,11 @@ init:
 	mkdir -p runs/$(RUN_NAME)/fastq/raw
 	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/*.csv runs/$(RUN_NAME)/metadata
-	ln -sf $(BASE_DIR)/scripts/slurm_scRNA_pipeline.sh runs/$(RUN_NAME)/slurm_scRNA_pipeline.sh
-	ln -sf $(BASE_DIR)/scripts/slurm_scRNA_get_fastqs.sh runs/$(RUN_NAME)/slurm_scRNA_get_fastqs.sh
-	ln -sf $(BASE_DIR)/scripts/slurm_CellBenderGPU.sh runs/$(RUN_NAME)/slurm_CellBenderGPU.sh
-	cat scripts/scRNA_params.sh \
+	git clone git@github.com:cclab-brca/scRNAseq_pipeline.git runs/$(RUN_NAME)/scRNAseq_pipline
+	ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_scRNA_pipeline.sh runs/$(RUN_NAME)/slurm_scRNA_pipeline.sh
+	ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline//scripts/slurm_scRNA_get_fastqs.sh runs/$(RUN_NAME)/slurm_scRNA_get_fastqs.sh
+	ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline//scripts/slurm_CellBenderGPU.sh runs/$(RUN_NAME)/slurm_CellBenderGPU.sh
+	cat ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/scRNA_params.sh \
 	| sed 's/__RUN_NAME__/$(RUN_NAME)/g' \
 	| sed 's/__SLX_RUN__/$(SLX_RUN)/g' \
 	> runs/$(RUN_NAME)/scRNA_params.sh
@@ -32,18 +33,18 @@ init:
 
 init_report:
 	mkdir -p runs/$(RUN_NAME)/report/tmp
-	$(BASE_DIR)/scripts/scRNA_create_run_csv.R $(BASE_DIR) $(RUN_NAME)
+	$(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/scRNA_create_run_csv.R $(BASE_DIR) $(RUN_NAME)
 	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '$(SLX_RUN).*.html' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/$(SLX_RUN).*.html runs/$(RUN_NAME)/report
 	
 # Throw all qc figs to ppt slides
 qcs_to_ppt:
-	$(BASE_DIR)/scripts/scRNA_qcs_to_ppt.R $(BASE_DIR)/runs/$(RUN_NAME) $(HG_MM_MODE)
+	$(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/scRNA_qcs_to_ppt.R $(BASE_DIR)/runs/$(RUN_NAME) $(HG_MM_MODE)
 	
 # Collect html and csv reports on the run level and all runs meta-table ($(BASE_DIR)/scRNAseq_samples_metrics.csv).
 # Entries of the current run will be added to the meta-table if they are not already there (identified by $RUN_NAME and sample names).
 report: qcs_to_ppt
-	$(BASE_DIR)/scripts/scRNA_make_report.R $(BASE_DIR) $(RUN_NAME)
+	$(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/scRNA_make_report.R $(BASE_DIR) $(RUN_NAME)
 
 # Maintenance	
 clean_fastq:
@@ -86,9 +87,10 @@ visium_init:
 	mkdir -p runs/Visium/$(RUN_NAME)/fastq/raw
 	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/*.csv runs/Visium/$(RUN_NAME)/metadata
-	ln -sf $(BASE_DIR)/scripts/slurm_Visium_pipeline.sh runs/Visium/$(RUN_NAME)/slurm_Visium_pipeline.sh
-	ln -sf $(BASE_DIR)/scripts/slurm_Visium_get_fastqs.sh runs/Visium/$(RUN_NAME)/slurm_Visium_get_fastqs.sh
-	cat scripts/Visium_params.sh \
+	git clone git@github.com:cclab-brca/scRNAseq_pipeline.git runs/$(RUN_NAME)/scRNAseq_pipline
+	ln -sf $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_Visium_pipeline.sh runs/Visium/$(RUN_NAME)/slurm_Visium_pipeline.sh
+	ln -sf $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_Visium_get_fastqs.sh runs/Visium/$(RUN_NAME)/slurm_Visium_get_fastqs.sh
+	cat $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/Visium_params.sh \
 	| sed 's/__RUN_NAME__/$(RUN_NAME)/g' \
 	| sed 's/__SLX_RUN__/$(SLX_RUN)/g' \
 	> runs/Visium/$(RUN_NAME)/Visium_params.sh

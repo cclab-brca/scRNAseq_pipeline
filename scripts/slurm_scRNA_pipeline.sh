@@ -53,7 +53,7 @@ fi
 
 if [ "${RUN_CELLRANGER}" == "rerun" ] || [ "${RUN_CELLRANGER}" == "run" -a ! -e ${WD}/${SAMPLE_NAME}/outs/metrics_summary.csv ]
 then
-        $BASE_DIR/software/cellranger-5.0.0/cellranger count \
+        $CELLRANGER count \
                 --id ${SAMPLE_NAME} \
                 --fastqs ${WD}/fastq/raw \
                 --sample ${SAMPLE_ID} \
@@ -66,10 +66,20 @@ then
                 --jobmode slurm
 fi
 
+if [ "${RUN_CLEAN_BARCODE_SWAPPING}" == "rerun" ] || [ "${RUN_CLEAN_BARCODE_SWAPPING}" == "run" -a ! -e ${WD}/cleaned_swapped_barcodes.done ]
+then
+  echo "Stopping processing of $SAMPLE_NAME after cellranger because you selected to run swappedDrops. Please wait for all cellranger jobs for this sequnecing run to finish and then submit the slurm_scRNA_clean_swapped_barcodes.sh script."
+  exit 1
+fi
+
 if [ "${RUN_CELLBENDER}" == "rerun" ] || [ "${RUN_CELLBENDER}" == "run" -a ! -e ${WD}/${SAMPLE_NAME}/outs/cellbender_output_filtered.h5 ]
 then
         echo "*** Removing ambient noise with CellBender (sending job to a GPU node) ***"
-        ${BASE_DIR}/scripts/scRNA_run_CellBender.R $WD $SAMPLE_NAME \
+        if [ "${RUN_CLEAN_BARCODE_SWAPPING}" == "rerun" ] || [ "${RUN_CLEAN_BARCODE_SWAPPING}" == "run" ]
+        then
+          echo "Warning: you seemed to clean swapped barcodes, yet CellBender uses the original (non-cleaned) cellranger output"
+        fi
+        ${BASE_DIR}/runs/${RUN_NAME}/scRNAseq_pipeline/scripts/scRNA_run_CellBender.R $WD $SAMPLE_NAME \
         $EXPECTED_CELLS $TOTAL_DROPLETS_INCLUDES \
         $FPR $EPOCHS $LEARNING_RATE $SLURM_ARRAY_TASK_ID
 fi
@@ -77,7 +87,7 @@ fi
 # QC filter cells by number of UMIs and %mito UMIs
 if [ "${RUN_QC_FILTER}" == "rerun" ] || [ "${RUN_QC_FILTER}" == "run" -a ! -e ${WD}/${SAMPLE_NAME}/outs/qc_filt_barcodes.tsv.gz ]
 then
-        ${BASE_DIR}/scripts/scRNA_qc_filter_cells.R $WD $SAMPLE_NAME \
+        ${BASE_DIR}/runs/${RUN_NAME}/scRNAseq_pipeline/scripts/scRNA_qc_filter_cells.R $WD $SAMPLE_NAME \
         $MIN_HUMAN_NON_MT_UMIS $MAX_HUMAN_F_MITO \
         $MIN_MOUSE_NON_MT_UMIS $MAX_MOUSE_F_MITO \
         $HUMAN_PREF $MOUSE_PREF $MITO_FILTER_BY
@@ -110,7 +120,7 @@ fi
 # Integrate souporcell clustering into the mat and generate some plots
 if [ "${RUN_MAT_INTEGRATION}" == "rerun" ] || [ "${RUN_MAT_INTEGRATION}" == "run" -a "${SOC_N_CLUSTERS}" -gt 0 -a ! -e ${WD}/${SAMPLE_NAME}/outs/scrnaseq.done ]
 then
-        ${BASE_DIR}/scripts/scRNA_SoC_finalise.R $WD $SAMPLE_NAME $HUMAN_PREF $MOUSE_PREF
+        ${BASE_DIR}/runs/${RUN_NAME}/scRNAseq_pipeline/scripts/scRNA_SoC_finalise.R $WD $SAMPLE_NAME $HUMAN_PREF $MOUSE_PREF
 fi
 
 # Run souporcell on human QC filtered singlet cells with K from 1 to MAX_SOC_HG_K (optional)
@@ -164,7 +174,7 @@ then
           -t $SLURM_CPUS_PER_TASK -o /base_dir/runs/${RUN_NAME}/${SAMPLE_NAME}/outs/souporcell_hg/k${k}_comVar${SOC_ON_HG_USE_COMMON_VARIANTS} -k ${k} --ignore True
       fi
     done
-    ${BASE_DIR}/scripts/scRNA_add_SoC_cluster_info.R $WD $SAMPLE_NAME $SOC_ON_HG_USE_COMMON_VARIANTS $SOC_ON_HG_SINGLETS_MAX_K $SOC_ON_HG_LL_IMPROVE_CUTOFF
+    ${BASE_DIR}/runs/${RUN_NAME}/scRNAseq_pipeline/scripts/scRNA_add_SoC_cluster_info.R $WD $SAMPLE_NAME $SOC_ON_HG_USE_COMMON_VARIANTS $SOC_ON_HG_SINGLETS_MAX_K $SOC_ON_HG_LL_IMPROVE_CUTOFF
   fi
 fi
 

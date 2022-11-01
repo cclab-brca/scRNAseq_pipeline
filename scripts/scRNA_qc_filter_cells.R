@@ -52,6 +52,8 @@ scfigs_init(figs_dir)
 message("building mat...")
 cb_h5_fn = sprintf("%s/cellbender_output_filtered.h5", samp_dir)
 cellbender = file.exists(cb_h5_fn)
+cleaned_swapped_idir = sprintf("%s/filtered_feature_bc_matrix_swappedDrops_cleaned", samp_dir)
+cleaned_swapped_bcs = file.exists(cleaned_swapped_idir)
 
 mat = scmat_read_scmat_10x(matrix_fn = sprintf("%s/filtered_feature_bc_matrix/matrix.mtx.gz", samp_dir), 
                            genes_fn  = sprintf("%s/filtered_feature_bc_matrix/features.tsv.gz", samp_dir),
@@ -60,6 +62,10 @@ mat = scmat_read_scmat_10x(matrix_fn = sprintf("%s/filtered_feature_bc_matrix/ma
 mat@cell_metadata$seq_batch_id = basename(base_dir)
 mat@cell_metadata$amp_batch_id = sample_name
 scdb_add_mat(paste0(sample_name, ifelse(cellbender, "_orig", "")), mat)
+
+if (cellbender && cleaned_swapped_bcs) {
+  stop(sprintf("Error: both CellBender and swappedDrops were run on this sample, when only one matrix can be used.\nPlease either delete/rename %s or %s to conntinue with only one of them", cb_h5_fn, cleaned_swapped_idir))  
+}
 
 # CellBender was used to remove ambient noise. Load both original and cleaned count matrices. ----
 if (cellbender) {
@@ -88,6 +94,17 @@ if (cellbender) {
   mat = scdb_mat(sample_name)
   
 } 
+
+if (cleaned_swapped_bcs) {
+  message("loading the swapped barcodes cleaned matrix...")
+  mat = scmat_read_scmat_10x(matrix_fn = sprintf("%s/matrix.mtx.gz", cleaned_swapped_idir), 
+                             genes_fn  = sprintf("%s/features.tsv.gz", cleaned_swapped_idir),
+                             cells_fn  = sprintf("%s/barcodes.tsv.gz", cleaned_swapped_idir), 
+                             dataset_id = sample_name)
+  mat@cell_metadata$seq_batch_id = basename(base_dir)
+  mat@cell_metadata$amp_batch_id = sample_name
+  scdb_add_mat(sample_name, mat)
+}
 
 mm_uc = colSums(mat@mat[grep(paste0("^", mm_pref), mat@genes), ])
 mm_mt = colSums(mat@mat[grep(sprintf("^%smt-", ifelse(hg_pref == "NA", "", paste0(mm_pref, "_"))), mat@genes), ]) 
