@@ -16,7 +16,7 @@ RUN_MAT_INTEGRATION=skip
 RUN_SOC_ON_HG_SINGLETS=skip
 
 #### Cell ranger executable
-CELLRANGER=$BASE_DIR/software/cellranger-5.0.0/bin/cellranger
+CELLRANGER=$BASE_DIR/software/cellranger-7.0.1/bin/cellranger
 
 #### Cell ranger reference genome, one of the following:
 # refdata-gex-GRCh38-2020-A (human)
