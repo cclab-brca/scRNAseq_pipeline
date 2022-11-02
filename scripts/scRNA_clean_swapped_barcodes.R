@@ -32,7 +32,7 @@ for (sample_name in names(x$swapped)) {
   dir.create(cleaned_dir, showWarnings = F)
   Matrix::writeMM(cleaned[, sh_bcs], sprintf("%s/matrix.mtx", cleaned_dir))
   write.table(sh_bcs, file = paste0(cleaned_dir, "/barcodes.tsv"), quote = F, row.names = F, col.names = F) 
-  write.table(rownames(sh_bcs), file = paste0(cleaned_dir, "/features.tsv"), quote = F, row.names = F, col.names = F) 
+  write.table(rownames(cleaned), file = paste0(cleaned_dir, "/features.tsv"), quote = F, row.names = F, col.names = F) 
   xx = lapply(paste(cleaned_dir, c("matrix.mtx", "features.tsv", "barcodes.tsv"), sep="/"), R.utils::gzip, overwrite=T)
   
   swapped_dir = sprintf("%s_swappedDrops_swapped/", orig_dir)
@@ -40,7 +40,7 @@ for (sample_name in names(x$swapped)) {
   #fwrite_mm(swapped[, sh_bcs], fname=sprintf("%s/matrix.mtx", swapped_dir), row.names=paste0(swapped_dir, "/features.tsv"), col.names=paste0(swapped_dir, "/barcodes.tsv"))
   Matrix::writeMM(swapped[, sh_bcs], sprintf("%s/matrix.mtx", swapped_dir))
   write.table(sh_bcs, file = paste0(swapped_dir, "/barcodes.tsv"), quote = F, row.names = F, col.names = F) 
-  write.table(rownames(sh_bcs), file = paste0(swapped_dir, "/features.tsv"), quote = F, row.names = F, col.names = F) 
+  write.table(rownames(swapped), file = paste0(swapped_dir, "/features.tsv"), quote = F, row.names = F, col.names = F) 
   xx = lapply(paste(swapped_dir, c("matrix.mtx", "features.tsv", "barcodes.tsv"), sep="/"), R.utils::gzip, overwrite=T)
   
   c_df = data.frame(SampleName = sample_name, tot_cleaned=sum(cleaned), tot_swapped=sum(swapped))
