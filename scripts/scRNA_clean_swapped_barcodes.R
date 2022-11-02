@@ -1,7 +1,7 @@
 #!/home/bioinformatics/software/R/R-4.0.4-gcc-9.2.0/bin/Rscript
 require(data.table, quietly = T)
 require(DropletUtils, quietly = T)
-require(tgutil, quietly = T)
+require(Matrix, quietly = T)
 
 args = commandArgs(trailingOnly = T)
 
@@ -30,13 +30,18 @@ for (sample_name in names(x$swapped)) {
   
   cleaned_dir = sprintf("%s_swappedDrops_cleaned/", orig_dir)
   dir.create(cleaned_dir, showWarnings = F)
-  fwrite_mm(cleaned[, sh_bcs], fname=sprintf("%s/matrix.mtx", cleaned_dir), row.names=paste0(cleaned_dir, "/features.tsv"), col.names=paste0(cleaned_dir, "/barcodes.tsv"))
-  lapply(paste(cleaned_dir, c("matrix.mtx", "features.tsv", "barcodes.tsv"), sep="/"), gzfile)
+  Matrix::writeMM(cleaned[, sh_bcs], sprintf("%s/matrix.mtx", cleaned_dir))
+  write.table(sh_bcs, file = paste0(cleaned_dir, "/barcodes.tsv"), quote = F, row.names = F, col.names = F) 
+  write.table(rownames(sh_bcs), file = paste0(cleaned_dir, "/features.tsv"), quote = F, row.names = F, col.names = F) 
+  xx = lapply(paste(cleaned_dir, c("matrix.mtx", "features.tsv", "barcodes.tsv"), sep="/"), R.utils::gzip, overwrite=T)
   
   swapped_dir = sprintf("%s_swappedDrops_swapped/", orig_dir)
   dir.create(swapped_dir, showWarnings = F)
-  fwrite_mm(swapped[, sh_bcs], fname=sprintf("%s/matrix.mtx", swapped_dir), row.names=paste0(swapped_dir, "/features.tsv"), col.names=paste0(swapped_dir, "/barcodes.tsv"))
-  lapply(paste(swapped_dir, c("matrix.mtx", "features.tsv", "barcodes.tsv"), sep="/"), gzfile)
+  #fwrite_mm(swapped[, sh_bcs], fname=sprintf("%s/matrix.mtx", swapped_dir), row.names=paste0(swapped_dir, "/features.tsv"), col.names=paste0(swapped_dir, "/barcodes.tsv"))
+  Matrix::writeMM(swapped[, sh_bcs], sprintf("%s/matrix.mtx", swapped_dir))
+  write.table(sh_bcs, file = paste0(swapped_dir, "/barcodes.tsv"), quote = F, row.names = F, col.names = F) 
+  write.table(rownames(sh_bcs), file = paste0(swapped_dir, "/features.tsv"), quote = F, row.names = F, col.names = F) 
+  xx = lapply(paste(swapped_dir, c("matrix.mtx", "features.tsv", "barcodes.tsv"), sep="/"), R.utils::gzip, overwrite=T)
   
   c_df = data.frame(SampleName = sample_name, tot_cleaned=sum(cleaned), tot_swapped=sum(swapped))
   c_df$f_swapped = c_df$tot_swapped / (c_df$tot_swapped + c_df$tot_cleaned)
