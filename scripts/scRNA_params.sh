@@ -30,7 +30,7 @@ REF_CELLRANGER_PATH=$BASE_DIR/ref_data/refdata-gex-GRCh38-and-mm10-2020-A
 # 'SC5P-PE' or 'SC5P-R2' for Single Cell 5', paired-end/R2-only, 'SC-FB' for Single Cell Antibody-only 3' v2 or 5' [default: auto] 
 CHEM=SC3Pv3
 
-# Count reads mapped to introns? (leave empty for scRNAseq, "--include-introns" if single-nucleus RNA-seq, and "by_sample_name" to use introns if SAMPLE_NAME contains "nuclei")
+# Count reads mapped to introns? (true by default in cellranger 7.*, set to false to disable. "--include-introns" if single-nucleus RNA-seq, and "by_sample_name" to use introns if SAMPLE_NAME contains "nuclei")
 INCLUDE_INTRONS=""
 
 #### Clean barcode swapping with dropletUtils::swappedDrops

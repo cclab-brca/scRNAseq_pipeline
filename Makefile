@@ -1,6 +1,7 @@
 ################################
 # Makefile for scRNAseq pipeline
 ################################
+#BASE_DIR = /mnt/scratcha/jblab/eyal-l01/scRNAseq
 BASE_DIR = /mnt/scratchb/cclab/scRNAseq
 TMP_DIR = /tmp/tmp.$(USER).$(SLX_RUN)
 CLARITY_JAR = $(BASE_DIR)/software/clarity-tools.jar
@@ -21,9 +22,9 @@ init:
 	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/*.csv runs/$(RUN_NAME)/metadata
 	git clone git@github.com:cclab-brca/scRNAseq_pipeline.git runs/$(RUN_NAME)/scRNAseq_pipeline
-	ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_scRNA_pipeline.sh runs/$(RUN_NAME)/slurm_scRNA_pipeline.sh
-	ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline//scripts/slurm_scRNA_get_fastqs.sh runs/$(RUN_NAME)/slurm_scRNA_get_fastqs.sh
-	ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline//scripts/slurm_CellBenderGPU.sh runs/$(RUN_NAME)/slurm_CellBenderGPU.sh
+	for fn in slurm_scRNA_pipeline.sh slurm_scRNA_get_fastqs.sh slurm_CellBenderGPU.sh slurm_scRNA_clean_swapped_barcodes.sh; do \
+			ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/$$fn runs/$(RUN_NAME)/$$fn; \
+	done
 	cat ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/scRNA_params.sh \
 	| sed 's/__RUN_NAME__/$(RUN_NAME)/g' \
 	| sed 's/__SLX_RUN__/$(SLX_RUN)/g' \
@@ -34,6 +35,7 @@ init:
 init_report:
 	mkdir -p runs/$(RUN_NAME)/report/tmp
 	$(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/scRNA_create_run_csv.R $(BASE_DIR) $(RUN_NAME)
+	sed 's/"//g' -i $(BASE_DIR)/runs/$(RUN_NAME)/metadata/*.csv
 	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '$(SLX_RUN).*.html' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/$(SLX_RUN).*.html runs/$(RUN_NAME)/report
 	

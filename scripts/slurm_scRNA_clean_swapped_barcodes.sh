@@ -30,5 +30,5 @@ fi
 
 if [ "${RUN_CLEAN_BARCODE_SWAPPING}" == "rerun" ] || [ "${RUN_CLEAN_BARCODE_SWAPPING}" == "run" -a ! -e ${WD}/cleaned_swapped_barcodes.done ]
 then
-        ${BASE_DIR}/runs/${RUN_NAME}/scRNAseq_pipeline/scripts/scRNA_clean_swapped_barcosed.R ${BASE_DIR}/runs/${RUN_NAME} $SWAPPED_DROPS_MIN_FRAC
+        ${BASE_DIR}/runs/${RUN_NAME}/scRNAseq_pipeline/scripts/scRNA_clean_swapped_barcodes.R ${BASE_DIR}/runs/${RUN_NAME} $SWAPPED_DROPS_MIN_FRAC
 fi
