@@ -61,7 +61,7 @@ mat = scmat_read_scmat_10x(matrix_fn = sprintf("%s/filtered_feature_bc_matrix/ma
                            dataset_id = paste0(sample_name, ifelse(cellbender, "_orig", "")))
 mat@cell_metadata$seq_batch_id = basename(base_dir)
 mat@cell_metadata$amp_batch_id = sample_name
-scdb_add_mat(paste0(sample_name, ifelse(cellbender, "_orig", "")), mat)
+scdb_add_mat(paste0(sample_name, ifelse(cellbender || cleaned_swapped_bcs, "_orig", "")), mat)
 
 if (cellbender && cleaned_swapped_bcs) {
   stop(sprintf("Error: both CellBender and swappedDrops were run on this sample, when only one matrix can be used.\nPlease either delete/rename %s or %s to conntinue with only one of them", cb_h5_fn, cleaned_swapped_idir))  
