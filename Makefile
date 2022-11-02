@@ -25,7 +25,7 @@ init:
 	for fn in slurm_scRNA_pipeline.sh slurm_scRNA_get_fastqs.sh slurm_CellBenderGPU.sh slurm_scRNA_clean_swapped_barcodes.sh; do \
 			ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/$$fn runs/$(RUN_NAME)/$$fn; \
 	done
-	cat ln -s $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/scRNA_params.sh \
+	cat $(BASE_DIR)/scRNAseq_pipeline/scripts/scRNA_params.sh \
 	| sed 's/__RUN_NAME__/$(RUN_NAME)/g' \
 	| sed 's/__SLX_RUN__/$(SLX_RUN)/g' \
 	> runs/$(RUN_NAME)/scRNA_params.sh
@@ -92,7 +92,7 @@ visium_init:
 	git clone git@github.com:cclab-brca/scRNAseq_pipeline.git runs/$(RUN_NAME)/scRNAseq_pipeline
 	ln -sf $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_Visium_pipeline.sh runs/Visium/$(RUN_NAME)/slurm_Visium_pipeline.sh
 	ln -sf $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_Visium_get_fastqs.sh runs/Visium/$(RUN_NAME)/slurm_Visium_get_fastqs.sh
-	cat $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/Visium_params.sh \
+	cat $(BASE_DIR)/scRNAseq_pipeline/scripts/Visium_params.sh \
 	| sed 's/__RUN_NAME__/$(RUN_NAME)/g' \
 	| sed 's/__SLX_RUN__/$(SLX_RUN)/g' \
 	> runs/Visium/$(RUN_NAME)/Visium_params.sh
