@@ -17,10 +17,11 @@ Download the associated fastq input files from genomics (once for all samples in
 Per sample:
 
 1. Run "cellranger count" 
-2. Use CellBender to remove ambient noise (optional)
-3. Further filtering of cellranger's valid cells by number of UMIs and %mito UMIs
-4. Run souporcell on the QC filtered cells (optional)
-5. Integrate souporcell output and create a metacell count matrix with QC and souporcell data.
+2. Use DropletUtils::swappedDrops to remove swapped barcodes on the sequencing run level (optional)
+3. Use CellBender to remove ambient noise (optional)
+4. Further filtering of cellranger's valid cells by number of UMIs and %mito UMIs
+5. Run souporcell on the QC filtered cells (optional)
+6. Integrate souporcell output and create a metacell count matrix with QC and souporcell data.
 
 ## Software requirements
 ### R packages ###
@@ -33,11 +34,17 @@ You need to install the following packages from within a session invoked by the 
 * MASS
 * ggplot2
 * officer
+* DropletUtils (only if removing swapped barcodes)
 * Seurat (only if using CellBender)
 
 You can install all these with this command:
 ```
 install.packages(pkgs=c('data.table', 'dplyr', 'tibble', 'MASS', 'ggplot2', 'officer', 'Seurat'))
+
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("DropletUtils")
 ```
 
 * metacell (see how to install here: https://github.com/tanaylab/metacell)
@@ -69,6 +76,7 @@ make init SLX_RUN=<YOUR SLX RUN NUMBER> RUN_NAME=<YOUR RUN NAME>
 ```
 
 For example: make init SLX-RUN=SLX-19799 RUN_NAME=Yaniv_snRNAseq_pilot1
+
 No spaces or special characters please, and will be nice if RUN_NAME begins with your name.
 
 This will create a folder for your run names RUN_NAME under the runs directory, will link the necessary scripts there and the genomics html reports to the report folder, and will download the metadata file to the metadata folder. 
@@ -147,6 +155,16 @@ scancel -u foo01
 
 When the job is finished a metacell matrix will be generated under your folder runs *scdb* dir and figures under the *figs* dir.
 
+#### Cleaning swapped barcodes
+If you opt to clean swapped barcodes (molecules with the same cell-barcode, gene and UMI that are swapped to another sample during sequencing) the pipeline will stop after the cellranger step. Once cellranger finishes for all samples in the sequencing run, submit the barcodes cleaning job (1 job for the sequencing run):
+```
+sbatch -t 24:0:0 slurm_scRNA_clean_swapped_barcodes.sh
+```
+This will generate a cleaned count matrix per sample under *outs/filtered_feature_bc_matrix_swappedDrops_cleaned*. If this folder exists than the cleaned matrix will be used as input in the following steps. The count matrix of the swapped counts is also stored under outs/filtered_feature_bc_matrix_swappedDrops_swapped. 
+The job generates a summary of the total umi count and %swapped umis per sample in *report/swappedDrops_counts.csv*
+
+Note that this step cannot run with cellbender, since both use original cellranger output as input.
+
 #### Viewing QC figures
 It is highly recommended to break up the run and examine the QC figures before running the Souporcell step. To help you do that you can dump all QC figures to a single powerpoint file which will be under the *report* folder of your run folder. To create it type from a terminal at the base dir folder:
 ```
@@ -155,7 +173,7 @@ make qcs_to_ppt RUN_NAME=<YOUR RUN NAME> HG_MM_MODE=<run mode>
 Note that you can run it after the first QC filtering step and after the final step of the pipeline (which adds the souporcell figures).
 Run mode depends if you have human and/or mouse cells, and can be *hg_mm*, *hg* or *mm*.
 
-### 7. Generate reports. 
+### 7. Generate reports
 Under the base dir folder (*/mnt/scratchb/cclab/scRNAseq*):
 ```
 make report RUN_NAME=<YOUR RUN_NAME>

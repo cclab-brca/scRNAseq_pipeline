@@ -184,6 +184,7 @@ pre code {
 <p>Per sample:</p>
 <ol style="list-style-type: decimal">
 <li>Run “cellranger count”</li>
+<li>Use DropletUtils::swappedDrops to remove swapped barcodes on the sequencing run level (optional)</li>
 <li>Use CellBender to remove ambient noise (optional)</li>
 <li>Further filtering of cellranger’s valid cells by number of UMIs and %mito UMIs</li>
 <li>Run souporcell on the QC filtered cells (optional)</li>
@@ -202,10 +203,16 @@ pre code {
 <li>MASS</li>
 <li>ggplot2</li>
 <li>officer</li>
+<li>DropletUtils (only if removing swapped barcodes)</li>
 <li>Seurat (only if using CellBender)</li>
 </ul>
 <p>You can install all these with this command:</p>
-<pre><code>install.packages(pkgs=c(&#39;data.table&#39;, &#39;dplyr&#39;, &#39;tibble&#39;, &#39;MASS&#39;, &#39;ggplot2&#39;, &#39;officer&#39;, &#39;Seurat&#39;))</code></pre>
+<pre><code>install.packages(pkgs=c(&#39;data.table&#39;, &#39;dplyr&#39;, &#39;tibble&#39;, &#39;MASS&#39;, &#39;ggplot2&#39;, &#39;officer&#39;, &#39;Seurat&#39;))
+
+if (!require(&quot;BiocManager&quot;, quietly = TRUE))
+    install.packages(&quot;BiocManager&quot;)
+
+BiocManager::install(&quot;DropletUtils&quot;)</code></pre>
 <ul>
 <li>metacell (see how to install here: <a href="https://github.com/tanaylab/metacell" class="uri">https://github.com/tanaylab/metacell</a>)</li>
 </ul>
@@ -240,7 +247,8 @@ conda activate CellBenderGPU</code></pre>
 <h3>1. Create the run folder</h3>
 <p>From a shell session on the current directory (currently /mnt/scratchb/cclab/scRNAseq) run:</p>
 <pre><code>make init SLX_RUN=&lt;YOUR SLX RUN NUMBER&gt; RUN_NAME=&lt;YOUR RUN NAME&gt;</code></pre>
-<p>For example: make init SLX-RUN=SLX-19799 RUN_NAME=Yaniv_snRNAseq_pilot1 No spaces or special characters please, and will be nice if RUN_NAME begins with your name.</p>
+<p>For example: make init SLX-RUN=SLX-19799 RUN_NAME=Yaniv_snRNAseq_pilot1</p>
+<p>No spaces or special characters please, and will be nice if RUN_NAME begins with your name.</p>
 <p>This will create a folder for your run names RUN_NAME under the runs directory, will link the necessary scripts there and the genomics html reports to the report folder, and will download the metadata file to the metadata folder.</p>
 <p>It is really important to view the metadata file and make sure there’s only one there and that it has the correct information.</p>
 </div>
@@ -298,6 +306,13 @@ conda activate CellBenderGPU</code></pre>
 <p>To cancel all your jobs (e.g. if your user name on the cluster is foo01:</p>
 <pre><code>scancel -u foo01</code></pre>
 <p>When the job is finished a metacell matrix will be generated under your folder runs <em>scdb</em> dir and figures under the <em>figs</em> dir.</p>
+<div id="cleaning-swapped-barcodes" class="section level4">
+<h4>Cleaning swapped barcodes</h4>
+<p>If you opt to clean swapped barcodes (molecules with the same cell-barcode, gene and UMI that are swapped to another sample during sequencing) the pipeline will stop after the cellranger step. Once cellranger finishes for all samples in the sequencing run, submit the barcodes cleaning job (1 job for the sequencing run):</p>
+<pre><code>sbatch -t 24:0:0 slurm_scRNA_clean_swapped_barcodes.sh</code></pre>
+<p>This will generate a cleaned count matrix per sample under <em>outs/filtered_feature_bc_matrix_swappedDrops_cleaned</em>. If this folder exists than the cleaned matrix will be used as input in the following steps. The count matrix of the swapped counts is also stored under outs/filtered_feature_bc_matrix_swappedDrops_swapped. The job generates a summary of the total umi count and %swapped umis per sample in <em>report/swappedDrops_counts.csv</em></p>
+<p>Note that this step cannot run with cellbender, since both use original cellranger output as input.</p>
+</div>
 <div id="viewing-qc-figures" class="section level4">
 <h4>Viewing QC figures</h4>
 <p>It is highly recommended to break up the run and examine the QC figures before running the Souporcell step. To help you do that you can dump all QC figures to a single powerpoint file which will be under the <em>report</em> folder of your run folder. To create it type from a terminal at the base dir folder:</p>
@@ -305,8 +320,8 @@ conda activate CellBenderGPU</code></pre>
 <p>Note that you can run it after the first QC filtering step and after the final step of the pipeline (which adds the souporcell figures). Run mode depends if you have human and/or mouse cells, and can be <em>hg_mm</em>, <em>hg</em> or <em>mm</em>.</p>
 </div>
 </div>
-<div id="generate-reports." class="section level3">
-<h3>7. Generate reports.</h3>
+<div id="generate-reports" class="section level3">
+<h3>7. Generate reports</h3>
 <p>Under the base dir folder (<em>/mnt/scratchb/cclab/scRNAseq</em>):</p>
 <pre><code>make report RUN_NAME=&lt;YOUR RUN_NAME&gt;</code></pre>
 <p>This will create a sample metrics csv file under the report folder and will create links in there to all cellranger html sample reports. The metrics will also be added to the lab master sample metrics file (<em>/mnt/scratchb/cclab/scRNAseq/scRNAseq_samples_metrics.csv</em>) if the entries are not already there (recognised by run name and sample names, so if you want to update existing entries first delete them and then run “make report”).</p>

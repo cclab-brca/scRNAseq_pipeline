@@ -4,6 +4,7 @@ SLX_RUN=__SLX_RUN__
 # Run name (will be the directory name)
 RUN_NAME=__RUN_NAME__
 
+#BASE_DIR=/mnt/scratcha/jblab/eyal-l01/scRNAseq
 BASE_DIR=/mnt/scratchb/cclab/scRNAseq
 
 # Which steps to run (only if their output does not exist), skip, and rerun (run even if output exists. Rerunning cellranger will delete the output folder and will will require rerunning the other steps too. Reruning souporcell will delete the outs/souporcell folder and rerun it from scratch)
