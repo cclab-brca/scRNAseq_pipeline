@@ -5,6 +5,7 @@
 # 
 # If CellBender was used to remove ambient noise, will load its output matrix and generate some comparison plots.
 
+require(MASS, quietly = T)
 require(data.table, quietly = T)
 require(metacell, quietly = T)
 require(dplyr, quietly = T)
@@ -289,11 +290,14 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   legend("topleft", legend=c("Human", "Mouse"), lwd=2, col=c('black', mm_col), bty='n')
   dev.off()
 
+
   png(scfigs_fn(sample_name, "fMito_vs_logUMIs"), 1000, 400)
   layout(matrix(1:4, nrow=1), widths=c(4,1,4,1))
   par(cex=1)
   par(mai=c(pm[1], pm[2]+pm[4]-0.1, pm[3], 0.1))
   plot(log2(md$hg_tot_non_mt_umis[is_hg]), md$hg_f_mito[is_hg], pch=19, cex=0.3, col=ifelse(md$valid_by_umis[is_hg], 'black', 'red'), xlab="Non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Human (%d)", sample_name, sum(md$valid_by_umis[is_hg])), ylim=0:1)
+  d = MASS::kde2d(log2(md$hg_tot_non_mt_umis[is_hg]), md$hg_f_mito[is_hg], n=50)
+  contour(d$x, d$y, d$z, drawlabels = F, col='blue', add=T)
   abline(v=log2(min_hg_non_mt_umis), lty=2)
   abline(h=max_hg_f_mito, lty=2)
   h = hist(md$hg_f_mito[is_hg], breaks=seq(0, 1, len=50), plot=F)
@@ -302,6 +306,8 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   
   par(mai=c(pm[1], pm[2]+pm[4]-0.1, pm[3], 0.1))
   plot(log2(md$mm_tot_non_mt_umis[!is_hg]), md$mm_f_mito[!is_hg], pch=19, cex=0.3, col=ifelse(md$valid_by_umis[!is_hg], 'black', 'red'), xlab="non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Mouse (%d)", sample_name, sum(md$valid_by_umis[!is_hg])), ylim=0:1)
+  d = MASS::kde2d(log2(md$mm_tot_non_mt_umis[!is_hg]), md$mm_f_mito[!is_hg], n=50)
+  contour(d$x, d$y, d$z, drawlabels = F, col='blue', add=T)
   abline(v=log2(min_mm_non_mt_umis), lty=2)
   abline(h=max_mm_f_mito, lty=2)
   h = hist(md$mm_f_mito[!is_hg], breaks=seq(0, 1, len=50), plot=F)
