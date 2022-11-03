@@ -151,7 +151,7 @@ if (any(args[3:6] == 'from_table')) {
   min_hg_non_mt_umis = ifelse(args[3] == 'from_table', qc_csv$hg_min_nonMT_umi_cutoff, min_hg_non_mt_umis)
   min_mm_non_mt_umis = ifelse(args[5] == 'from_table', qc_csv$mm_min_nonMT_umi_cutoff, min_mm_non_mt_umis)
 }
-  
+
 max_hg_mito_umis = round(quantile(hg_mt[is_hg & hg_f_mt >= max_hg_f_mito], 0.01))
 max_mm_mito_umis = round(quantile(mm_mt[!is_hg & mm_f_mt >= max_mm_f_mito], 0.01))
 
@@ -188,13 +188,13 @@ qc_csv = data.frame(Sample.name = sample_name,
 
 if (hg_pref != "NA") {
   mat@cell_metadata = cbind(mat@cell_metadata,
-                          data.frame(hg_tot_umis = hg_uc,
-                                     hg_tot_mt_umis = hg_mt,
-                                     hg_tot_non_mt_umis = hg_non_mt,
-                                     hg_tot_genes = hg_n_genes,
-                                     hg_f_mito = hg_f_mt,
-                                     hg_mt_good = hg_mt < max_hg_mito_umis | hg_f_mt < max_hg_f_mito,
-                                     hg_non_mt_good = hg_non_mt >= min_hg_non_mt_umis))
+                            data.frame(hg_tot_umis = hg_uc,
+                                       hg_tot_mt_umis = hg_mt,
+                                       hg_tot_non_mt_umis = hg_non_mt,
+                                       hg_tot_genes = hg_n_genes,
+                                       hg_f_mito = hg_f_mt,
+                                       hg_mt_good = hg_mt < max_hg_mito_umis | hg_f_mt < max_hg_f_mito,
+                                       hg_non_mt_good = hg_non_mt >= min_hg_non_mt_umis))
   qc_csv = qc_csv %>% 
     mutate(n_valid_hg = sum(is_valid & is_hg),
            f_valid_hg = mean(is_valid[is_hg]),
@@ -237,7 +237,7 @@ if (cellbender) {
   
   f_amb = colSums(dm) / colSums(omat@mat[, shc])
   f_hg_amb = colSums(dm[grep(paste0("^", ifelse(mm_pref == "NA", "", paste0(hg_pref, "_"))), rownames(dm)), ]) / colSums(dm)
-
+  
   cb_csv = read.csv(qc_csv_fn)
   qc_csv = qc_csv %>% left_join(cb_csv)
   
@@ -280,7 +280,7 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   lines(hgd, lwd=2, col='black')
   legend("topleft", legend=c("Human", "Mouse"), lwd=2, col=c('black', mm_col), bty='n')
   dev.off()
-
+  
   png(scfigs_fn(sample_name, "nonMT_UMIs_by_specie"), 400, 400)
   mmd = density(log2(1 + md$mm_tot_non_mt_umis[!is_hg]))
   hgd = density(log2(1 + md$hg_tot_non_mt_umis[is_hg]))
@@ -289,8 +289,8 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   abline(v=log2(c(min_hg_non_mt_umis, min_mm_non_mt_umis)), lty=2, col=c('black', mm_col))
   legend("topleft", legend=c("Human", "Mouse"), lwd=2, col=c('black', mm_col), bty='n')
   dev.off()
-
-
+  
+  
   png(scfigs_fn(sample_name, "fMito_vs_logUMIs"), 1000, 400)
   layout(matrix(1:4, nrow=1), widths=c(4,1,4,1))
   par(cex=1)
@@ -314,13 +314,13 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   par(mai=c(pm[1], 0, pm[3], 0.1))
   barplot(h$count, space=0, col='darkgray', horiz=T, border=NA)
   dev.off()
-
+  
   png(scfigs_fn(sample_name, "hg_vs_mm_UMIs"), 800, 400)
   par(mfrow=1:2)
   plot(log2(md$hg_tot_umis), log2(md$mm_tot_umis), pch=19, cex=0.3, col=ifelse(md$valid_by_umis, 'black', 'red'), xlab="Human UMIs (log2)", ylab="Mouse UMIs (log2)", main=paste(sample_name, "All"))
   plot(log2(md$hg_tot_non_mt_umis), log2(md$mm_tot_non_mt_umis), pch=19, cex=0.3, col=ifelse(md$valid_by_umis, 'black', 'red'), xlab="Human UMIs (log2)", ylab="Mouse UMIs (log2)", main=paste(sample_name, "non-MT"))
   dev.off()
-
+  
   if (cellbender) {
     mdcb = md[!is.na(md$f_amb), ]
     cb_is_hg = mdcb$hg_tot_umis > mdcb$mm_tot_umis
@@ -332,20 +332,20 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
     lines(hgd, lwd=2, col='black')
     legend("topright", legend=c("Human", "Mouse"), lwd=2, col=c('black', mm_col), bty='n')
     dev.off()
-
+    
     png(scfigs_fn(sample_name, "fAmb_vs_umis_by_specie"), 800, 400)
     par(mfrow=1:2)
     plot(log2(mdcb$hg_tot_non_mt_umis[cb_is_hg]), mdcb$f_amb[cb_is_hg], pch=19, cex=0.3, col=ifelse(mdcb$valid_by_umis[cb_is_hg], 'black', 'red'), xlab="Human non-MT UMIs (log2)", ylab="% Amb", main=paste(sample_name, "Human"))
     plot(log2(mdcb$mm_tot_non_mt_umis[!cb_is_hg]), mdcb$f_amb[!cb_is_hg], pch=19, cex=0.3, col=ifelse(mdcb$valid_by_umis[!cb_is_hg], 'black', 'red'), xlab="Mouse non-MT UMIs (log2)", ylab="% Amb", main=paste(sample_name, "Mouse"))
     dev.off()
-
+    
     png(scfigs_fn(sample_name, "fMT_vs_Amb_by_specie"), 800, 400)
     par(mfrow=1:2)
     plot(mdcb$f_amb[cb_is_hg], mdcb$hg_f_mito[cb_is_hg], pch=19, cex=0.3, col=ifelse(mdcb$valid_by_umis[cb_is_hg], 'black', 'red'), ylab="% Human MT UMIs", xlab="% Amb", main=paste(sample_name, "Human"))
     plot(mdcb$f_amb[!cb_is_hg], mdcb$mm_f_mito[!cb_is_hg], pch=19, cex=0.3, col=ifelse(mdcb$valid_by_umis[!cb_is_hg], 'black', 'red'), ylab="% Mouse MT UMIs", xlab="% Amb", main=paste(sample_name, "Mouse"))
     dev.off()
   }
-
+  
 } else if (hg_pref != "NA" && sum(is_hg) > 20 ) {
   png(scfigs_fn(sample_name, "hg_all_UMIs"), 400, 400)
   pm = par("mai")
@@ -364,6 +364,8 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   par(cex=1)
   par(mai=c(pm[1], pm[2]+pm[4]-0.1, pm[3], 0.1))
   plot(log2(md$hg_tot_non_mt_umis),        md$hg_f_mito       , pch=19, cex=0.3, col=ifelse(md$valid_by_umis,        'black', 'red'), xlab="Non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Human (%d)", sample_name, sum(md$valid_by_umis)),        ylim=0:1)
+  d = MASS::kde2d(log2(md$hg_tot_non_mt_umis), md$hg_f_mito, n=50)
+  contour(d$x, d$y, d$z, drawlabels = F, col='blue', add=T)
   h = hist(md$hg_f_mito, breaks=seq(0, 1, len=50), plot=F)
   par(mai=c(pm[1], 0, pm[3], 0.1))
   barplot(h$count, space=0, col='darkgray', horiz=T, border=NA)
@@ -404,6 +406,8 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   par(cex=1)
   par(mai=c(pm[1], pm[2]+pm[4]-0.1, pm[3], 0.1))
   plot(log2(md$mm_tot_non_mt_umis),        md$mm_f_mito       , pch=19, cex=0.3, col=ifelse(md$valid_by_umis,        'black', 'red'), xlab="Non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Mouse (%d)", sample_name, sum(md$valid_by_umis)),        ylim=0:1)
+  d = MASS::kde2d(log2(md$mm_tot_non_mt_umis), md$mm_f_mito, n=50)
+  contour(d$x, d$y, d$z, drawlabels = F, col='blue', add=T)
   h = hist(md$mm_f_mito, breaks=seq(0, 1, len=50), plot=F)
   par(mai=c(pm[1], 0, pm[3], 0.1))
   barplot(h$count, space=0, col='darkgray', horiz=T, border=NA)
@@ -427,5 +431,5 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   }
   
 } 
-  
+
 
