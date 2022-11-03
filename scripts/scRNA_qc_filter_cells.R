@@ -295,8 +295,9 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   layout(matrix(1:4, nrow=1), widths=c(4,1,4,1))
   par(cex=1)
   par(mai=c(pm[1], pm[2]+pm[4]-0.1, pm[3], 0.1))
-  plot(log2(md$hg_tot_non_mt_umis[is_hg]), md$hg_f_mito[is_hg], pch=19, cex=0.3, col=ifelse(md$valid_by_umis[is_hg], 'black', 'red'), xlab="Non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Human (%d)", sample_name, sum(md$valid_by_umis[is_hg])), ylim=0:1)
-  d = MASS::kde2d(log2(md$hg_tot_non_mt_umis[is_hg]), md$hg_f_mito[is_hg], n=50)
+  x = log2(1 + md$hg_tot_non_mt_umis[is_hg]); y = md$hg_f_mito[is_hg]
+  plot(x, y, pch=19, cex=0.3, col=ifelse(md$valid_by_umis[is_hg], 'black', 'red'), xlab="Non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Human (%d)", sample_name, sum(md$valid_by_umis[is_hg])), ylim=0:1)
+  d = MASS::kde2d(x, y, n=50)
   contour(d$x, d$y, d$z, drawlabels = F, col='blue', add=T)
   abline(v=log2(min_hg_non_mt_umis), lty=2)
   abline(h=max_hg_f_mito, lty=2)
@@ -305,8 +306,9 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   barplot(h$count, space=0, col='darkgray', horiz=T, border=NA)
   
   par(mai=c(pm[1], pm[2]+pm[4]-0.1, pm[3], 0.1))
-  plot(log2(md$mm_tot_non_mt_umis[!is_hg]), md$mm_f_mito[!is_hg], pch=19, cex=0.3, col=ifelse(md$valid_by_umis[!is_hg], 'black', 'red'), xlab="non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Mouse (%d)", sample_name, sum(md$valid_by_umis[!is_hg])), ylim=0:1)
-  d = MASS::kde2d(log2(md$mm_tot_non_mt_umis[!is_hg]), md$mm_f_mito[!is_hg], n=50)
+  x = log2(1+ md$mm_tot_non_mt_umis[!is_hg]); y = md$mm_f_mito[!is_hg]
+  plot(x, y, pch=19, cex=0.3, col=ifelse(md$valid_by_umis[!is_hg], 'black', 'red'), xlab="non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Mouse (%d)", sample_name, sum(md$valid_by_umis[!is_hg])), ylim=0:1)
+  d = MASS::kde2d(x, y, n=50)
   contour(d$x, d$y, d$z, drawlabels = F, col='blue', add=T)
   abline(v=log2(min_mm_non_mt_umis), lty=2)
   abline(h=max_mm_f_mito, lty=2)
@@ -363,8 +365,9 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   layout(matrix(1:2, nrow=1), widths=c(4,1))
   par(cex=1)
   par(mai=c(pm[1], pm[2]+pm[4]-0.1, pm[3], 0.1))
-  plot(log2(md$hg_tot_non_mt_umis),        md$hg_f_mito       , pch=19, cex=0.3, col=ifelse(md$valid_by_umis,        'black', 'red'), xlab="Non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Human (%d)", sample_name, sum(md$valid_by_umis)),        ylim=0:1)
-  d = MASS::kde2d(log2(md$hg_tot_non_mt_umis), md$hg_f_mito, n=50)
+  x = log2(1 + md$hg_tot_non_mt_umis);     y = md$hg_f_mito
+  plot(x, y       , pch=19, cex=0.3, col=ifelse(md$valid_by_umis,        'black', 'red'), xlab="Non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Human (%d)", sample_name, sum(md$valid_by_umis)),        ylim=0:1)
+  d = MASS::kde2d(x, y, n=50)
   contour(d$x, d$y, d$z, drawlabels = F, col='blue', add=T)
   h = hist(md$hg_f_mito, breaks=seq(0, 1, len=50), plot=F)
   par(mai=c(pm[1], 0, pm[3], 0.1))
@@ -405,8 +408,9 @@ if (hg_pref != "NA" && mm_pref != "NA" && sum(is_hg) > 20 && sum(!is_hg) > 20) {
   layout(matrix(1:2, nrow=1), widths=c(4,1))
   par(cex=1)
   par(mai=c(pm[1], pm[2]+pm[4]-0.1, pm[3], 0.1))
-  plot(log2(md$mm_tot_non_mt_umis),        md$mm_f_mito       , pch=19, cex=0.3, col=ifelse(md$valid_by_umis,        'black', 'red'), xlab="Non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Mouse (%d)", sample_name, sum(md$valid_by_umis)),        ylim=0:1)
-  d = MASS::kde2d(log2(md$mm_tot_non_mt_umis), md$mm_f_mito, n=50)
+  x = log2(1 + md$mm_tot_non_mt_umis); y = md$mm_f_mito
+  plot(x, y       , pch=19, cex=0.3, col=ifelse(md$valid_by_umis,        'black', 'red'), xlab="Non-MT UMIs (log2)", ylab="%mito", main=sprintf("%s: Mouse (%d)", sample_name, sum(md$valid_by_umis)),        ylim=0:1)
+  d = MASS::kde2d(x, y, n=50)
   contour(d$x, d$y, d$z, drawlabels = F, col='blue', add=T)
   h = hist(md$mm_f_mito, breaks=seq(0, 1, len=50), plot=F)
   par(mai=c(pm[1], 0, pm[3], 0.1))
