@@ -29,7 +29,7 @@ then
 fi
 
 # Initial download to determine input type (old: tar per sample, new: fqs that need renaming)
-java -jar ${BASE_DIR}/software/clarity-tools.jar -l $SLX_RUN -f "${SLX_RUN}.*.tar" -f "${SLX_RUN}*.fq.gz" -d ${WD}/fastq/tmp 
+$JAVA -jar ${BASE_DIR}/software/clarity-tools.jar -l $SLX_RUN -f "${SLX_RUN}.*.tar" -f "${SLX_RUN}*.fq.gz" -d ${WD}/fastq/tmp 
 if ls ${WD}/fastq/tmp/${SLX_RUN}/*lostreads* >& /dev/null
 then
         rm ${WD}/fastq/tmp/${SLX_RUN}/*lostreads*

@@ -4,6 +4,7 @@
 #BASE_DIR = /mnt/scratcha/jblab/eyal-l01/scRNAseq
 BASE_DIR = /mnt/scratchb/cclab/scRNAseq
 TMP_DIR = /tmp/tmp.$(USER).$(SLX_RUN)
+JAVA=/home/bioinformatics/software/java/java17/bin/java
 CLARITY_JAR = $(BASE_DIR)/software/clarity-tools.jar
 
 #############################
