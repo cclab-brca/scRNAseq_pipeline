@@ -80,3 +80,5 @@ SOC_ON_HG_USE_COMMON_VARIANTS=FALSE
 # For finding optimal K with elbow on log loss: cutoff on LL improvement (choose smallest k s.t. LL(k+1) / LL(k) <= 1 - cutoff)
 SOC_ON_HG_LL_IMPROVE_CUTOFF=0.05
 
+# Java path
+JAVA=/home/bioinformatics/software/java/java17/bin/java
