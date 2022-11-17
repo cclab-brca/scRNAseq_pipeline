@@ -20,7 +20,7 @@ CLARITY_JAR = $(BASE_DIR)/software/clarity-tools.jar
 init:
 	mkdir -p runs/$(RUN_NAME)/metadata
 	mkdir -p runs/$(RUN_NAME)/fastq/raw
-	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
+	$(JAVA) -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/*.csv runs/$(RUN_NAME)/metadata
 	git clone git@github.com:cclab-brca/scRNAseq_pipeline.git runs/$(RUN_NAME)/scRNAseq_pipeline
 	for fn in slurm_scRNA_pipeline.sh slurm_scRNA_get_fastqs.sh slurm_CellBenderGPU.sh slurm_scRNA_clean_swapped_barcodes.sh; do \
@@ -37,7 +37,7 @@ init_report:
 	mkdir -p runs/$(RUN_NAME)/report/tmp
 	$(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/scRNA_create_run_csv.R $(BASE_DIR) $(RUN_NAME)
 	sed 's/"//g' -i $(BASE_DIR)/runs/$(RUN_NAME)/metadata/*.csv
-	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '$(SLX_RUN).*.html' -d $(TMP_DIR)
+	$(JAVA) -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '$(SLX_RUN).*.html' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/$(SLX_RUN).*.html runs/$(RUN_NAME)/report
 	
 # Throw all qc figs to ppt slides
@@ -88,7 +88,7 @@ copy_back_bams:
 visium_init:
 	mkdir -p runs/Visium/$(RUN_NAME)/metadata
 	mkdir -p runs/Visium/$(RUN_NAME)/fastq/raw
-	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
+	$(JAVA) -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/*.csv runs/Visium/$(RUN_NAME)/metadata
 	git clone git@github.com:cclab-brca/scRNAseq_pipeline.git runs/$(RUN_NAME)/scRNAseq_pipeline
 	ln -sf $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_Visium_pipeline.sh runs/Visium/$(RUN_NAME)/slurm_Visium_pipeline.sh
@@ -99,7 +99,7 @@ visium_init:
 	> runs/Visium/$(RUN_NAME)/Visium_params.sh
 	chmod 755 runs/Visium/$(RUN_NAME)/Visium_params.sh
 	mkdir -p runs/Visium/$(RUN_NAME)/report/tmp
-	java -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '$(SLX_RUN).*.html' -d $(TMP_DIR)
+	$(JAVA) -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '$(SLX_RUN).*.html' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/$(SLX_RUN).*.html runs/Visium/$(RUN_NAME)/report
 	
 
