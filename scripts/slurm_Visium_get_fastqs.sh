@@ -45,6 +45,6 @@ if ls ${WD}/fastq/tmp/${SLX_RUN}/${SLX_RUN}.*tar >& /dev/null
         done
 else
         mv ${WD}/fastq/tmp/${SLX_RUN}/${SLX_RUN}.*.fq.gz $WD/fastq/raw
-        ${BASE_DIR}/runs/${RUN_NAME}/scRNAseq_pipeline/scripts/crukci_to_illumina.py ${WD}/fastq/raw
+        ${BASE_DIR}/runs/Visium/${RUN_NAME}/scRNAseq_pipeline/scripts/crukci_to_illumina.py ${WD}/fastq/raw
 fi
 
