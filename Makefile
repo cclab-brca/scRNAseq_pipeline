@@ -91,8 +91,8 @@ visium_init:
 	$(JAVA) -jar $(CLARITY_JAR) -l $(SLX_RUN) -f '*.csv' -d $(TMP_DIR)
 	mv $(TMP_DIR)/$(SLX_RUN)/*.csv runs/Visium/$(RUN_NAME)/metadata
 	git clone git@github.com:cclab-brca/scRNAseq_pipeline.git runs/Visium/$(RUN_NAME)/scRNAseq_pipeline
-	ln -sf $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_Visium_pipeline.sh runs/Visium/$(RUN_NAME)/slurm_Visium_pipeline.sh
-	ln -sf $(BASE_DIR)/runs/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_Visium_get_fastqs.sh runs/Visium/$(RUN_NAME)/slurm_Visium_get_fastqs.sh
+	ln -sf $(BASE_DIR)/runs/Visium/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_Visium_pipeline.sh runs/Visium/$(RUN_NAME)/slurm_Visium_pipeline.sh
+	ln -sf $(BASE_DIR)/runs/Visium/$(RUN_NAME)/scRNAseq_pipeline/scripts/slurm_Visium_get_fastqs.sh runs/Visium/$(RUN_NAME)/slurm_Visium_get_fastqs.sh
 	cat $(BASE_DIR)/scRNAseq_pipeline/scripts/Visium_params.sh \
 	| sed 's/__RUN_NAME__/$(RUN_NAME)/g' \
 	| sed 's/__SLX_RUN__/$(SLX_RUN)/g' \
