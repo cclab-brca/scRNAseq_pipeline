@@ -4,7 +4,7 @@ SLX_RUN=__SLX_RUN__
 # Run name (will be the directory name)
 RUN_NAME=__RUN_NAME__
 
-BASE_DIR=/mnt/scratchb/cclab/scRNAseq
+BASE_DIR=/mnt/scratcha/cclab/scRNAseq
 
 # Run metadata files
 META_FILE=$BASE_DIR/runs/Visium/$RUN_NAME/metadata/${SLX_RUN}*.contents.csv

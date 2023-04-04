@@ -245,7 +245,7 @@ conda activate CellBenderGPU</code></pre>
 <h2>Running the pipeline</h2>
 <div id="create-the-run-folder" class="section level3">
 <h3>1. Create the run folder</h3>
-<p>From a shell session on the current directory (currently /mnt/scratchb/cclab/scRNAseq) run:</p>
+<p>From a shell session on the current directory (currently /mnt/scratcha/cclab/scRNAseq) run:</p>
 <pre><code>make init SLX_RUN=&lt;YOUR SLX RUN NUMBER&gt; RUN_NAME=&lt;YOUR RUN NAME&gt;</code></pre>
 <p>For example: make init SLX-RUN=SLX-19799 RUN_NAME=Yaniv_snRNAseq_pilot1</p>
 <p>No spaces or special characters please, and will be nice if RUN_NAME begins with your name.</p>
@@ -322,9 +322,9 @@ conda activate CellBenderGPU</code></pre>
 </div>
 <div id="generate-reports" class="section level3">
 <h3>7. Generate reports</h3>
-<p>Under the base dir folder (<em>/mnt/scratchb/cclab/scRNAseq</em>):</p>
+<p>Under the base dir folder (<em>/mnt/scratcha/cclab/scRNAseq</em>):</p>
 <pre><code>make report RUN_NAME=&lt;YOUR RUN_NAME&gt;</code></pre>
-<p>This will create a sample metrics csv file under the report folder and will create links in there to all cellranger html sample reports. The metrics will also be added to the lab master sample metrics file (<em>/mnt/scratchb/cclab/scRNAseq/scRNAseq_samples_metrics.csv</em>) if the entries are not already there (recognised by run name and sample names, so if you want to update existing entries first delete them and then run “make report”).</p>
+<p>This will create a sample metrics csv file under the report folder and will create links in there to all cellranger html sample reports. The metrics will also be added to the lab master sample metrics file (<em>/mnt/scratcha/cclab/scRNAseq/scRNAseq_samples_metrics.csv</em>) if the entries are not already there (recognised by run name and sample names, so if you want to update existing entries first delete them and then run “make report”).</p>
 </div>
 </div>
 

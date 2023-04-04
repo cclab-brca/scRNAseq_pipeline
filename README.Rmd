@@ -70,7 +70,7 @@ CellBender is used to remove ambient noise from the cells. See: https://cellbend
 ## Running the pipeline
 
 ### 1. Create the run folder
-From a shell session on the current directory (currently /mnt/scratchb/cclab/scRNAseq) run:
+From a shell session on the current directory (currently /mnt/scratcha/cclab/scRNAseq) run:
 ``` 
 make init SLX_RUN=<YOUR SLX RUN NUMBER> RUN_NAME=<YOUR RUN NAME>
 ```
@@ -174,12 +174,12 @@ Note that you can run it after the first QC filtering step and after the final s
 Run mode depends if you have human and/or mouse cells, and can be *hg_mm*, *hg* or *mm*.
 
 ### 7. Generate reports
-Under the base dir folder (*/mnt/scratchb/cclab/scRNAseq*):
+Under the base dir folder (*/mnt/scratcha/cclab/scRNAseq*):
 ```
 make report RUN_NAME=<YOUR RUN_NAME>
 ```
 
-This will create a sample metrics csv file under the report folder and will create links in there to all cellranger html sample reports. The metrics will also be added to the lab master sample metrics file (*/mnt/scratchb/cclab/scRNAseq/scRNAseq_samples_metrics.csv*) if the entries are not already there (recognised by run name and sample names, so if you want to update existing entries first delete them and then run "make report").
+This will create a sample metrics csv file under the report folder and will create links in there to all cellranger html sample reports. The metrics will also be added to the lab master sample metrics file (*/mnt/scratcha/cclab/scRNAseq/scRNAseq_samples_metrics.csv*) if the entries are not already there (recognised by run name and sample names, so if you want to update existing entries first delete them and then run "make report").
 
 
 
