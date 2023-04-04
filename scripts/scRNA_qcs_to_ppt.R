@@ -1,4 +1,4 @@
-#!/home/bioinformatics/software/R/R-4.0.4-gcc-9.2.0/bin/Rscript
+#!/home/bioinformatics/software/R/R-4.2.2-gcc-8.5.0/bin/Rscript
 
 # Bundle up QCs figures to ppptx slides, one slide per sample. Currently supports only 'hg_mm' in hg_mm_mode 
 require(metacell, quietly = T)

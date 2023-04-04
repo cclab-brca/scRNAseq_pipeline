@@ -1,4 +1,4 @@
-#!/home/bioinformatics/software/R/R-4.0.4-gcc-9.2.0/bin/Rscript
+#!/home/bioinformatics/software/R/R-4.2.2-gcc-8.5.0/bin/Rscript
 require(dplyr, quietly=T)
 
 # Collate QC metrics of the run's sample, add them to a master table (base_dir/scRNAseq_samples_metrics.csv) and link cellranger html reports in a single directory.

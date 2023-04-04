@@ -1,4 +1,4 @@
-#!/home/bioinformatics/software/R/R-4.0.4-gcc-9.2.0/bin/Rscript
+#!/home/bioinformatics/software/R/R-4.2.2-gcc-8.5.0/bin/Rscript
 
 # Find optimal K out of the souporcell clustering solutions and add the selected clustering info to the mat
 

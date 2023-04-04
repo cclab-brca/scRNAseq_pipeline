@@ -1,4 +1,4 @@
-#!/home/bioinformatics/software/R/R-4.0.4-gcc-9.2.0/bin/Rscript
+#!/home/bioinformatics/software/R/R-4.2.2-gcc-8.5.0/bin/Rscript
 
 # Wrapper for sending a slurm job on a GPU node for CellBender
 require(dplyr, quietly = T)

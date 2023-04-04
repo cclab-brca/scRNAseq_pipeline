@@ -1,4 +1,4 @@
-#!/home/bioinformatics/software/R/R-4.0.4-gcc-9.2.0/bin/Rscript
+#!/home/bioinformatics/software/R/R-4.2.2-gcc-8.5.0/bin/Rscript
 
 # Load a cellranger count generated matrix into Metacell and create a QC passed barcodes list in 
 # the outs folder, filtering by non-Mito UMIs per cell and total mito umis ('auto' for automatic cutoffs based on the data).
