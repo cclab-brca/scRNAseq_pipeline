@@ -98,6 +98,7 @@ if (file.exists(soc_clust_fn) && ! "soc_fine_assign" %in% colnames(md)) {
       cl = soc$status 
       max_knn_iters = 40
       k = 30
+      set.seed(42) # class::knn function is not deterministic, set seed for consistency
       for (i in 1:max_knn_iters) { 
         kcl = knn(train=xy, test=xy, cl=cl, k=k)
         cl = ifelse(cl == 'doublet' | kcl == 'doublet', 'doublet', 'singlet')
